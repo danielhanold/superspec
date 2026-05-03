@@ -153,31 +153,10 @@ To skip Superspec for a single change and use the upstream schema instead:
 
 ---
 
-## Project layout (after install)
-
-```
-openspec/
-├── config.yaml                    # schema: superspec
-└── schemas/
-    └── superspec/
-        ├── schema.yaml            # artifact pipeline + instructions
-        ├── README.md              # design rationale (this schema)
-        ├── INTEGRATION.md         # lifecycle + CLI cheat sheet
-        └── templates/             # markdown stubs per artifact
-            ├── brainstorm.md
-            ├── proposal.md
-            ├── design.md
-            ├── spec.md
-            ├── tasks.md
-            ├── plan.md
-            └── verify.md
-```
-
----
-
 ## Further reading
 
 - [`docs/workflow.md`](docs/workflow.md) — phase-by-phase walkthrough of the nine Superspec phases (mental model, why required, source phase, replaced step)
+- [`docs/project-layout.md`](docs/project-layout.md) — files and directories Superspec adds under `openspec/` after install
 - [`openspec/schemas/superspec/README.md`](openspec/schemas/superspec/README.md) — design motivation and rationale
 - [`openspec/schemas/superspec/INTEGRATION.md`](openspec/schemas/superspec/INTEGRATION.md) — full lifecycle, CLI cheat sheet, and design choices
 - [`openspec/schemas/superspec/schema.yaml`](openspec/schemas/superspec/schema.yaml) — machine-readable schema
