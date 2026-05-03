@@ -24,6 +24,8 @@ Superspec is a **custom OpenSpec schema** that wires the two together at the art
 
 ## Concepts
 
+> **Looking for a phase-by-phase walkthrough?** See **[docs/workflow.md](docs/workflow.md)** — it covers what each of the nine phases does, why each one is required, which source system (OpenSpec or Superpowers) owns it, and which step from the other source it replaces.
+
 ### Two layers, one schema
 
 | Layer | Owner | What it manages |
@@ -203,6 +205,7 @@ openspec/
 
 ## Further reading
 
+- [`docs/workflow.md`](docs/workflow.md) — phase-by-phase walkthrough of the nine Superspec phases (mental model, why required, source phase, replaced step)
 - [`openspec/schemas/superspec/README.md`](openspec/schemas/superspec/README.md) — design motivation and rationale
 - [`openspec/schemas/superspec/INTEGRATION.md`](openspec/schemas/superspec/INTEGRATION.md) — full lifecycle, CLI cheat sheet, and design choices
 - [`openspec/schemas/superspec/schema.yaml`](openspec/schemas/superspec/schema.yaml) — machine-readable schema
