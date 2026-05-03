@@ -42,31 +42,7 @@ Every change moves through the same five phases, in order:
 
 Each phase produces concrete artifacts in the change directory and (where applicable) hands off to a Superpowers skill. The full artifact-by-artifact mapping is below.
 
-### The 7 Superpowers touch points
-
-| # | Skill | Hook | Trigger |
-|---|---|---|---|
-| 1 | `superpowers:brainstorming` | `brainstorm` artifact instruction | Direct |
-| 2 | `superpowers:writing-plans` | `plan` artifact instruction | Direct |
-| 3 | `superpowers:using-git-worktrees` | apply step 1 | Direct |
-| 4 | `superpowers:subagent-driven-development` | apply step 2a | Direct |
-| 5 | `superpowers:test-driven-development` | inside #4 | **Transitive** |
-| 6 | `superpowers:requesting-code-review` | inside #4 | **Transitive** |
-| 7 | `superpowers:finishing-a-development-branch` | apply step 4 | Direct |
-
-`subagent-driven-development` is the workhorse: the main agent reads `plan.md` and dispatches a fresh subagent for each micro-task. Each subagent enforces TDD (write failing test → minimum code to pass → refactor) and runs spec-compliance + code-quality review per task. A final review runs over the whole implementation before apply concludes.
-
-**Fallback path:** `superpowers:executing-plans` is documented for harnesses without subagent support. On Claude Code, subagents *are* available, so 2a is the default. If you're forced to fall back, you must manually maintain TDD discipline and invoke `superpowers:requesting-code-review` yourself.
-
-### Fallback strategy
-
-If a Superpowers skill is unavailable (not installed, version mismatch), each artifact instruction includes a manual fallback:
-
-- `brainstorm` → manually write `brainstorm.md`
-- `plan` → manually write `plan.md`
-- `apply` → standard task-by-task manual implementation
-
-Superspec degrades gracefully to plain OpenSpec when the execution layer is missing.
+For the full Superpowers-skill index (which skills run, where they're hooked in, and what fallbacks apply when one is unavailable), see [docs/workflow.md → Superpowers skill index & fallbacks](docs/workflow.md#superpowers-skill-index--fallbacks).
 
 ---
 

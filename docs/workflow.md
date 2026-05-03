@@ -251,6 +251,36 @@ The Archival phase closes the lifecycle: it cleans up the development branch, ap
 
 ---
 
+## Superpowers skill index & fallbacks
+
+A flat view of every Superpowers skill Superspec invokes, where it's hooked in, and how to recover if it's unavailable.
+
+### The 7 Superpowers touch points
+
+| # | Skill | Hook | Trigger |
+|---|---|---|---|
+| 1 | `superpowers:brainstorming` | Phase 1 / Step 1 (`brainstorm`) | Direct |
+| 2 | `superpowers:writing-plans` | Phase 2 / Step 6 (`plan`) | Direct |
+| 3 | `superpowers:using-git-worktrees` | Phase 3 / Step 7 (`apply`), sub-step 1 | Direct |
+| 4 | `superpowers:subagent-driven-development` | Phase 3 / Step 7 (`apply`), sub-step 2 | Direct |
+| 5 | `superpowers:test-driven-development` | inside #4 | **Transitive** |
+| 6 | `superpowers:requesting-code-review` | inside #4 | **Transitive** |
+| 7 | `superpowers:finishing-a-development-branch` | Phase 5 / Step 9 (finalization) | Direct |
+
+Direct triggers are invoked by the schema's artifact instructions; transitive triggers are activated *inside* another skill's loop (the subagent-driven-development workhorse — see [Step 7](#step-7-implementation--apply) for how it dispatches per-task subagents that enforce TDD and run code review).
+
+### Manual fallbacks
+
+If a Superpowers skill is unavailable (not installed, version mismatch), each artifact instruction includes a manual fallback so Superspec degrades gracefully to plain OpenSpec:
+
+| Step | Skill normally invoked | Manual fallback |
+|---|---|---|
+| 1 — `brainstorm` | `superpowers:brainstorming` | Write `brainstorm.md` directly. |
+| 6 — `plan` | `superpowers:writing-plans` | Write `plan.md` directly. |
+| 7 — `apply` (subagents unavailable) | `superpowers:subagent-driven-development` | Use `superpowers:executing-plans`, or run tasks manually. Either path requires you to maintain TDD discipline and invoke `superpowers:requesting-code-review` yourself — neither is activated transitively when the subagent path is bypassed. |
+
+---
+
 ## See also
 
 - [README](../README.md) — install and quick start
