@@ -30,14 +30,17 @@ OpenSpec supports custom schemas, and Superspec is exactly that — a drop-in sc
 
 > **Looking for a phase-by-phase walkthrough?** See **[docs/workflow.md](docs/workflow.md)** — it covers what each of the nine phases does, why each one is required, which source system (OpenSpec or Superpowers) owns it, and which step from the other source it replaces.
 
-### Two layers, one schema
+### The five phases of a Superspec change
 
-| Layer | Owner | What it manages |
-|---|---|---|
-| **WHAT** | OpenSpec | proposal, specs, design, tasks — markdown governance, validation, archival |
-| **HOW** | Superpowers | brainstorming conversations, plan-writing, TDD discipline, subagent dispatch, code review |
+Every change moves through the same five phases, in order:
 
-The integration lives entirely in [`openspec/schemas/superspec/schema.yaml`](openspec/schemas/superspec/schema.yaml). Each artifact's `instruction` field tells the agent *"at this step, use the Skill tool to invoke `superpowers:xxx`."* No Superpowers skill files are modified. The OpenSpec CLI sees Superspec as a normal project-level schema — `openspec schemas` lists it automatically and `openspec validate` checks its structure.
+1. **Brainstorm** — nail down the idea for the change through a guided conversation.
+2. **Artifact creation** — produce the proposal, optional design, [delta specs](https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md#delta-specs), tasks, and the micro-task plan.
+3. **Code implementation** — write the code in an isolated worktree using subagent-driven TDD.
+4. **Spec validation** — verify the implementation matches the delta specs and tasks.
+5. **Archival** — merge the change's delta specs into the project's living specs.
+
+Each phase produces concrete artifacts in the change directory and (where applicable) hands off to a Superpowers skill. The full artifact-by-artifact mapping is below.
 
 ### Artifact pipeline
 
