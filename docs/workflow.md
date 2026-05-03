@@ -1,39 +1,32 @@
 # Superspec Workflow: Phase-by-Phase Guide
 
-This page walks through the nine mental-model phases of a single Superspec change — what each phase is, **why it's required**, what concretely happens, which source system (OpenSpec or Superpowers) owns it, and what step from the other source is replaced.
+A Superspec change moves through **five phases**, broken into **nine concrete steps**. This page walks through each step — what it is, **why it's required**, what concretely happens, which source system (OpenSpec or Superpowers) owns it, and what step from the other source is replaced.
 
 Use it as the long-form companion to the [top-level README](../README.md) and the schema's own [INTEGRATION.md](../openspec/schemas/superspec/INTEGRATION.md).
 
----
-
 ## At a glance
 
-```
-Discovery        → Change Contract → Architecture     → Requirements      → Implementation Scope
-brainstorm       → proposal        → design (opt.)    → specs             → tasks
-                                                                                 │
-                                                                                 ▼
-Finalization     ← Validation       ← Implementation    ← Implementation Plan
-finish + archive ← verify           ← apply             ← plan
-```
-
-| # | Mental Model | Step | Brief Why | Source Phase Used |
+| Phase | # | Step | Brief Why | Source Phase Used |
 |---|---|---|---|---|
-| 1 | Discovery | `brainstorm` | Avoid building the wrong thing. | Superpowers: `brainstorming` |
-| 2 | Change Contract | `proposal` | Define the change boundary. | OpenSpec: `proposal` artifact |
-| 3 | Architecture | `design` | Explain the chosen solution. | Hybrid: Superpowers brainstorming + OpenSpec `design.md` |
-| 4 | Requirements | `specs` | Create the testable contract. | OpenSpec: `specs` artifact |
-| 5 | Implementation Scope | `tasks` | Scope the work. | OpenSpec: `tasks` artifact |
-| 6 | Implementation Plan | `plan` | Make the work executable. | Superpowers: `writing-plans` |
-| 7 | Implementation | `apply` | Change the system. | Superpowers: `using-git-worktrees`, `subagent-driven-development`, `test-driven-development`, `requesting-code-review` |
-| 8 | Validation | `verify` | Prove it matches intent. | OpenSpec: `/opsx:verify` |
-| 9 | Finalization | finish / archive boundary | Close the lifecycle cleanly. | Hybrid: Superpowers `finishing-a-development-branch` + OpenSpec `/opsx:archive` |
+| **1. Brainstorm** | 1 | `brainstorm` | Avoid building the wrong thing. | Superpowers: `brainstorming` |
+| **2. Artifact Creation** | 2 | `proposal` | Define the change boundary. | OpenSpec: `proposal` artifact |
+| | 3 | `design` *(optional)* | Explain the chosen solution. | Hybrid: Superpowers brainstorming + OpenSpec `design.md` |
+| | 4 | `specs` | Create the testable contract. | OpenSpec: `specs` artifact |
+| | 5 | `tasks` | Scope the work. | OpenSpec: `tasks` artifact |
+| | 6 | `plan` | Make the work executable. | Superpowers: `writing-plans` |
+| **3. Code Implementation** | 7 | `apply` | Change the system. | Superpowers: `using-git-worktrees`, `subagent-driven-development`, `test-driven-development`, `requesting-code-review` |
+| **4. Spec Validation** | 8 | `verify` | Prove it matches intent. | OpenSpec: `/opsx:verify` |
+| **5. Archival** | 9 | finish / archive boundary | Close the lifecycle cleanly. | Hybrid: Superpowers `finishing-a-development-branch` + OpenSpec `/opsx:archive` |
 
-Read top-to-bottom for the full lifecycle, or jump to any phase via the links above.
+Read top-to-bottom for the full lifecycle, or jump to any step.
 
 ---
 
-## 1. Discovery — `brainstorm`
+## Phase 1: Brainstorm
+
+The Brainstorm phase nails down the idea for the change before any formal artifacts are produced. It contains a single step.
+
+### Step 1. Discovery — `brainstorm`
 
 > Front-end discovery and design shaping before formal artifacts are created.
 
@@ -49,7 +42,11 @@ Read top-to-bottom for the full lifecycle, or jump to any phase via the links ab
 
 ---
 
-## 2. Change Contract — `proposal`
+## Phase 2: Artifact Creation
+
+The Artifact Creation phase produces every governed artifact for the change — the proposal, optional design, delta specs, coarse tasks, and the executable micro-task plan. It contains five steps (steps 2–6).
+
+### Step 2. Change Contract — `proposal`
 
 > Converts the brainstormed design into an OpenSpec-style change contract.
 
@@ -72,7 +69,7 @@ The Capabilities section is the load-bearing piece: it forms the contract betwee
 
 ---
 
-## 3. Architecture — `design` *(optional)*
+### Step 3. Architecture — `design` *(optional)*
 
 > Captures implementation approach and technical rationale.
 
@@ -98,7 +95,7 @@ Focus is on architecture and approach, not line-by-line implementation. If brain
 
 ---
 
-## 4. Requirements — `specs`
+### Step 4. Requirements — `specs`
 
 > Defines testable system behavior.
 
@@ -125,7 +122,7 @@ Hard formatting rules (validated by OpenSpec):
 
 ---
 
-## 5. Implementation Scope — `tasks`
+### Step 5. Implementation Scope — `tasks`
 
 > Creates the coarse implementation checklist.
 
@@ -149,7 +146,7 @@ The format matters: the apply phase parses `- [ ]` to track progress, so tasks n
 
 ---
 
-## 6. Implementation Plan — `plan`
+### Step 6. Implementation Plan — `plan`
 
 > Converts coarse OpenSpec tasks into executable micro-steps.
 
@@ -170,7 +167,11 @@ The format matters: the apply phase parses `- [ ]` to track progress, so tasks n
 
 ---
 
-## 7. Implementation — `apply`
+## Phase 3: Code Implementation
+
+The Code Implementation phase produces the actual code for the change, executed in an isolated git worktree under Superpowers' subagent + TDD + code-review loop. It contains a single step.
+
+### Step 7. Implementation — `apply`
 
 > Executes the implementation.
 
@@ -197,7 +198,11 @@ The format matters: the apply phase parses `- [ ]` to track progress, so tasks n
 
 ---
 
-## 8. Validation — `verify`
+## Phase 4: Spec Validation
+
+The Spec Validation phase proves the implementation actually matches the proposal, specs, design, and tasks before the change is considered complete. It contains a single step.
+
+### Step 8. Validation — `verify`
 
 > Validates the completed implementation against the artifacts.
 
@@ -221,7 +226,11 @@ If any check fails, the agent returns to the offending artifact, fixes it, and r
 
 ---
 
-## 9. Finalization — finish / archive boundary
+## Phase 5: Archival
+
+The Archival phase closes the lifecycle: it cleans up the development branch, applies the change's delta specs against the project's living specs, and moves the completed change into the archive. It contains a single step.
+
+### Step 9. Finalization — finish / archive boundary
 
 > Completes the development branch and prepares OpenSpec finalization.
 

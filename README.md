@@ -28,7 +28,7 @@ OpenSpec supports custom schemas, and Superspec is exactly that — a drop-in sc
 
 ## Concepts
 
-> **Looking for a phase-by-phase walkthrough?** See **[docs/workflow.md](docs/workflow.md)** — it covers what each of the nine phases does, why each one is required, which source system (OpenSpec or Superpowers) owns it, and which step from the other source it replaces.
+> **Looking for a phase-by-phase walkthrough?** See **[docs/workflow.md](docs/workflow.md)** — it expands the five phases into the nine concrete steps that drive them, with the why behind each step, which source system (OpenSpec or Superpowers) owns it, and which step from the other source it replaces.
 
 ### The five phases of a Superspec change
 
@@ -41,25 +41,6 @@ Every change moves through the same five phases, in order:
 5. **Archival** — merge the change's delta specs into the project's living specs.
 
 Each phase produces concrete artifacts in the change directory and (where applicable) hands off to a Superpowers skill. The full artifact-by-artifact mapping is below.
-
-### Artifact pipeline
-
-```
-brainstorm  ──►  proposal  ──►  specs  ──►  tasks  ──►  plan  ──►  apply  ──►  verify  ──►  archive
-                    │                                                              ▲
-                    └─►  design (optional, may be pre-filled by brainstorm)  ──────┘
-```
-
-| Artifact | Output | Superpowers skill invoked | What it produces |
-|---|---|---|---|
-| `brainstorm` | `brainstorm.md` | `superpowers:brainstorming` | Validated design from a multi-turn conversation; may pre-fill `design.md` |
-| `proposal` | `proposal.md` | — | Why / What Changes / Capabilities / Impact (50–1000 chars on Why) |
-| `design` *(optional)* | `design.md` | — | Technical decisions, only when non-trivial |
-| `specs` | `specs/<capability>/spec.md` | — | Delta specs (ADDED / MODIFIED / REMOVED / RENAMED) with `SHALL`/`MUST` requirements and `#### Scenario:` blocks |
-| `tasks` | `tasks.md` | — | Coarse `- [ ] X.Y` checkboxes tracked during apply |
-| `plan` | `plan.md` | `superpowers:writing-plans` | Micro-task breakdown (2–5 minute steps) |
-| `apply` *(phase, not artifact)* | code + commits | `using-git-worktrees`, `subagent-driven-development` (which transitively triggers `test-driven-development` and `requesting-code-review`), `finishing-a-development-branch` | The implementation itself |
-| `verify` | `verify.md` | — | Post-apply checks: structural validation, task completion, delta sync, design/spec coherence, no unstaged files |
 
 ### The 7 Superpowers touch points
 
