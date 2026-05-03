@@ -111,6 +111,8 @@ openspec validate     # should pass with no errors
 
 ## Quick start
 
+These commands are run **inside your agent harness** (e.g., Cursor's agent mode, Claude Code, Copilot, Codex, or Gemini) — not in a plain shell. The `/opsx:` slash commands are registered by your harness's OpenSpec integration, so type them directly into the agent prompt.
+
 Once installed, you have two flows.
 
 ### Quick flow (recommended)
