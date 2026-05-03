@@ -220,6 +220,12 @@ openspec/
 
 ---
 
+## Credits
+
+Superspec is based on [JiangWay/OpenSpec — `schemas/sdd-plus-superpowers`](https://github.com/JiangWay/OpenSpec/tree/main/schemas/sdd-plus-superpowers), which originated the integration of OpenSpec's spec-driven workflow with Superpowers execution skills. This repository repackages that schema as a standalone, drop-in addition for any OpenSpec project.
+
+---
+
 ## License
 
 [MIT](LICENSE) © 2026 Daniel Hanold.
