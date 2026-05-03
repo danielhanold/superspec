@@ -42,8 +42,6 @@ Every change moves through the same five phases, in order:
 
 Each phase produces concrete artifacts in the change directory and (where applicable) hands off to a Superpowers skill. The full artifact-by-artifact mapping is below.
 
-For the full Superpowers-skill index (which skills run, where they're hooked in, and what fallbacks apply when one is unavailable), see [docs/workflow.md → Superpowers skill index & fallbacks](docs/workflow.md#superpowers-skill-index--fallbacks).
-
 ---
 
 ## Installation
