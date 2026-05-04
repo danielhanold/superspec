@@ -12,15 +12,15 @@
 
 ---
 
-## Why Superspec
+## About Superspec
+
+**Superspec is an opinionated integration of OpenSpec and Superpowers**, with OpenSpec as the orchestrator. The artifact pipeline drives the workflow; each phase invokes the right Superpowers skill at the right time so the path from idea to TDD-verified code is traceable, reproducible, and auditable.
 
 **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** turns feature ideas into versioned, reviewable specs — proposals, capability deltas, and tasks that live in the repo alongside the code.
 
 **[Superpowers](https://github.com/obra/superpowers)** is a set of execution skills for coding agents — brainstorming, plan-writing, TDD, subagent dispatch, and code review — that enforce discipline during implementation.
 
 The two overlap (both produce design and task artifacts) but focus on different domains: OpenSpec governs **spec-driven planning**, Superpowers governs **spec-driven development and implementation**. Used independently, you end up with duplicate documents, parallel task lists, and manual decisions about which skill to invoke at each step.
-
-**Superspec is an opinionated integration of both**, with OpenSpec as the orchestrator. The artifact pipeline drives the workflow; each phase invokes the right Superpowers skill at the right time so the path from idea to TDD-verified code is traceable, reproducible, and auditable.
 
 OpenSpec supports custom schemas, and Superspec is exactly that — a drop-in schema that picks the best of both frameworks and wires them together for a fully integrated workflow combining spec-driven and test-driven development. No fork of OpenSpec, no modification to Superpowers skills.
 
