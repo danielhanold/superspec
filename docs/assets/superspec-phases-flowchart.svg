@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1720"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+
+  <defs>
+    <!-- ============ Reusable icon symbols ============ -->
+
+    <!-- Lightning bolt = Superpowers -->
+    <symbol id="ic-bolt" viewBox="0 0 16 16">
+      <path d="M 9.5 1 L 3 9 L 7 9 L 6 15 L 12.5 7 L 8.5 7 L 9.5 1 Z"
+            fill="currentColor" stroke="currentColor" stroke-width="0.5" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- Clipboard = OpenSpec -->
+    <symbol id="ic-clipboard" viewBox="0 0 16 16">
+      <rect x="3" y="3.5" width="10" height="11.5" rx="1.5"
+            fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="5.5" y="1.5" width="5" height="3" rx="0.6" fill="currentColor"/>
+      <path d="M 5.5 8.5 L 7.2 10.2 L 10.7 6.5"
+            fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- Hybrid = bolt + clipboard side by side, packed in 32x16 -->
+    <symbol id="ic-hybrid" viewBox="0 0 32 16">
+      <use href="#ic-bolt" x="0" y="0" width="16" height="16"/>
+      <use href="#ic-clipboard" x="16" y="0" width="16" height="16"/>
+    </symbol>
+
+    <!-- Lightbulb = idea -->
+    <symbol id="ic-bulb" viewBox="0 0 16 16">
+      <path d="M 8 1.5 C 4.7 1.5 3 4 3 6.5 C 3 8.4 4.2 9.7 5.3 10.5 L 5.3 12 L 10.7 12 L 10.7 10.5 C 11.8 9.7 13 8.4 13 6.5 C 13 4 11.3 1.5 8 1.5 Z"
+            fill="currentColor"/>
+      <rect x="5.8" y="12.5" width="4.4" height="1.3" rx="0.3" fill="currentColor"/>
+      <rect x="6.4" y="14" width="3.2" height="1" rx="0.3" fill="currentColor"/>
+    </symbol>
+
+    <!-- Check in circle = success -->
+    <symbol id="ic-check" viewBox="0 0 16 16">
+      <circle cx="8" cy="8" r="7" fill="currentColor"/>
+      <path d="M 4.5 8.2 L 7 10.5 L 11.5 5.5"
+            fill="none" stroke="#ffffff" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- ============ Effects ============ -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#e2e8f0"/>
+    </pattern>
+
+    <style type="text/css"><![CDATA[
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Cascadia Mono", "Roboto Mono", "Courier New", monospace; }
+    ]]></style>
+  </defs>
+
+  <!-- ================== background ================== -->
+  <rect width="900" height="1720" fill="#fafafa"/>
+  <rect width="900" height="1720" fill="url(#dots)" opacity="0.6"/>
+
+  <!-- ================== title ================== -->
+  <text x="450" y="50" text-anchor="middle" font-size="26" font-weight="700" fill="#0f172a">
+    Superspec — 5-Phase Pipeline
+  </text>
+  <text x="450" y="74" text-anchor="middle" font-size="13" fill="#64748b">
+    OpenSpec governance · Superpowers execution · single traceable change from idea to TDD-verified code
+  </text>
+
+  <!-- ================== legend ================== -->
+  <g transform="translate(170, 100)">
+    <!-- Superpowers chip -->
+    <rect x="0" y="0" width="170" height="32" rx="16" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+    <g color="#92400e"><use href="#ic-bolt" x="14" y="8" width="16" height="16"/></g>
+    <text x="38" y="21" font-size="13" font-weight="600" fill="#92400e">Superpowers</text>
+
+    <!-- OpenSpec chip -->
+    <rect x="195" y="0" width="170" height="32" rx="16" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+    <g color="#1e3a8a"><use href="#ic-clipboard" x="209" y="8" width="16" height="16"/></g>
+    <text x="233" y="21" font-size="13" font-weight="600" fill="#1e3a8a">OpenSpec</text>
+
+    <!-- Hybrid chip -->
+    <rect x="390" y="0" width="170" height="32" rx="16" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5"/>
+    <g color="#5b21b6"><use href="#ic-hybrid" x="402" y="8" width="32" height="16"/></g>
+    <text x="440" y="21" font-size="13" font-weight="600" fill="#5b21b6">Hybrid Phase</text>
+  </g>
+
+  <!-- ================== START NODE ================== -->
+  <g transform="translate(330, 168)">
+    <rect x="0" y="0" width="240" height="44" rx="22" fill="#dcfce7" stroke="#16a34a" stroke-width="2" filter="url(#cardShadow)"/>
+    <g color="#16a34a"><use href="#ic-bulb" x="22" y="14" width="16" height="16"/></g>
+    <text x="130" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#14532d">
+      Idea / Change Request
+    </text>
+  </g>
+
+  <!-- connector -->
+  <line x1="450" y1="212" x2="450" y2="248" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ================================================== -->
+  <!-- ============== PHASE 1 · BRAINSTORM ============== -->
+  <!-- ================================================== -->
+  <g transform="translate(80, 256)">
+    <rect x="0" y="0" width="740" height="124" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#fef3c7"/>
+    <circle cx="26" cy="22" r="14" fill="#f59e0b"/>
+    <text x="26" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">1</text>
+    <text x="50" y="27" font-size="14" font-weight="700" fill="#92400e" letter-spacing="1.2">PHASE 1 · BRAINSTORM</text>
+    <!-- entrypoint chip -->
+    <rect x="534" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#f59e0b" stroke-width="1"/>
+    <text x="607" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#92400e">/opsx:new</text>
+    <g color="#92400e"><use href="#ic-bolt" x="708" y="14" width="16" height="16"/></g>
+    <line x1="0" y1="44" x2="740" y2="44" stroke="#fde68a" stroke-width="1"/>
+
+    <!-- substep -->
+    <g transform="translate(20, 64)">
+      <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+      <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">superpowers:brainstorming</text>
+      <text x="36" y="30" font-size="12" fill="#475569">Explore context · ask clarifying questions one at a time · propose 2–3 approaches with trade-offs</text>
+      <text x="36" y="46" font-size="11" fill="#64748b">→ outputs <tspan class="mono" fill="#0f172a">brainstorm.md</tspan></text>
+    </g>
+  </g>
+
+  <line x1="450" y1="380" x2="450" y2="416" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========================================================= -->
+  <!-- ========== PHASE 2 · ARTIFACT CREATION ================== -->
+  <!-- ========================================================= -->
+  <g transform="translate(80, 424)">
+    <rect x="0" y="0" width="740" height="304" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#ede9fe"/>
+    <circle cx="26" cy="22" r="14" fill="#8b5cf6"/>
+    <text x="26" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">2</text>
+    <text x="50" y="27" font-size="14" font-weight="700" fill="#5b21b6" letter-spacing="1.2">PHASE 2 · ARTIFACT CREATION</text>
+    <!-- entrypoint chip -->
+    <rect x="518" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="591" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#5b21b6">/opsx:continue</text>
+    <g color="#5b21b6"><use href="#ic-hybrid" x="692" y="14" width="32" height="16"/></g>
+    <line x1="0" y1="44" x2="740" y2="44" stroke="#ddd6fe" stroke-width="1"/>
+
+    <!-- substep 1: proposal -->
+    <g transform="translate(20, 60)">
+      <circle cx="14" cy="14" r="13" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <g color="#1e3a8a"><use href="#ic-clipboard" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">proposal.md</text>
+      <text x="36" y="30" font-size="12" fill="#475569">Change boundary: <tspan font-style="italic">why · what changes · capabilities · impact</tspan></text>
+    </g>
+
+    <!-- substep 2: design -->
+    <g transform="translate(20, 110)">
+      <circle cx="14" cy="14" r="13" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <g color="#1e3a8a"><use href="#ic-clipboard" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">design.md<tspan class="mono" font-weight="400" fill="#64748b">  (optional)</tspan></text>
+      <text x="36" y="30" font-size="12" fill="#475569">Architecture &amp; rationale: context · goals · decisions · risks · trade-offs</text>
+    </g>
+
+    <!-- substep 3: specs -->
+    <g transform="translate(20, 160)">
+      <circle cx="14" cy="14" r="13" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <g color="#1e3a8a"><use href="#ic-clipboard" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">specs/&lt;capability&gt;/spec.md</text>
+      <text x="36" y="30" font-size="12" fill="#475569">Delta requirements: ADDED · MODIFIED · REMOVED · RENAMED · SHALL/MUST + scenarios</text>
+    </g>
+
+    <!-- substep 4: tasks -->
+    <g transform="translate(20, 210)">
+      <circle cx="14" cy="14" r="13" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <g color="#1e3a8a"><use href="#ic-clipboard" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">tasks.md</text>
+      <text x="36" y="30" font-size="12" fill="#475569">Coarse <tspan class="mono">- [ ]</tspan> checklist · grouped &amp; ordered · dependency-aware</text>
+    </g>
+
+    <!-- substep 5: plan -->
+    <g transform="translate(20, 260)">
+      <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+      <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">superpowers:writing-plans → plan.md</text>
+      <text x="36" y="30" font-size="12" fill="#475569">2–5 min TDD micro-steps (RED → GREEN → REFACTOR) · file paths · snippets · commit points</text>
+    </g>
+  </g>
+
+  <line x1="450" y1="728" x2="450" y2="764" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========================================================= -->
+  <!-- ========== PHASE 3 · CODE IMPLEMENTATION ================ -->
+  <!-- ========================================================= -->
+  <g transform="translate(80, 772)">
+    <rect x="0" y="0" width="740" height="248" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#fef3c7"/>
+    <circle cx="26" cy="22" r="14" fill="#f59e0b"/>
+    <text x="26" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">3</text>
+    <text x="50" y="27" font-size="14" font-weight="700" fill="#92400e" letter-spacing="1.2">PHASE 3 · CODE IMPLEMENTATION</text>
+    <!-- entrypoint chip -->
+    <rect x="534" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#f59e0b" stroke-width="1"/>
+    <text x="607" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#92400e">/opsx:apply</text>
+    <g color="#92400e"><use href="#ic-bolt" x="708" y="14" width="16" height="16"/></g>
+    <line x1="0" y1="44" x2="740" y2="44" stroke="#fde68a" stroke-width="1"/>
+
+    <!-- substep 1 -->
+    <g transform="translate(20, 60)">
+      <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+      <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">using-git-worktrees</text>
+      <text x="36" y="30" font-size="12" fill="#475569">Isolated <tspan class="mono">.worktrees/&lt;name&gt;/</tspan> · new branch · clean test baseline</text>
+    </g>
+
+    <!-- substep 2 -->
+    <g transform="translate(20, 108)">
+      <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+      <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">subagent-driven-development</text>
+      <text x="36" y="30" font-size="12" fill="#475569">Main agent dispatches a fresh subagent per micro-task in <tspan class="mono">plan.md</tspan></text>
+    </g>
+
+    <!-- substep 3 (transitive) -->
+    <g transform="translate(20, 156)">
+      <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2,2"/>
+      <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">test-driven-development<tspan font-weight="400" fill="#64748b" class="mono">  (transitive)</tspan></text>
+      <text x="36" y="30" font-size="12" fill="#475569">RED → GREEN → REFACTOR · failing test first · minimum code to pass</text>
+    </g>
+
+    <!-- substep 4 (transitive) -->
+    <g transform="translate(20, 204)">
+      <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2,2"/>
+      <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">requesting-code-review<tspan font-weight="400" fill="#64748b" class="mono">  (transitive)</tspan></text>
+      <text x="36" y="30" font-size="12" fill="#475569">Per-task subagent review · final review over the full implementation · <tspan class="mono">- [ ]</tspan> → <tspan class="mono">- [x]</tspan></text>
+    </g>
+  </g>
+
+  <line x1="450" y1="1020" x2="450" y2="1056" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========================================================= -->
+  <!-- ========== PHASE 4 · SPEC VALIDATION ==================== -->
+  <!-- ========================================================= -->
+  <g transform="translate(80, 1064)">
+    <rect x="0" y="0" width="740" height="220" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#dbeafe"/>
+    <circle cx="26" cy="22" r="14" fill="#3b82f6"/>
+    <text x="26" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">4</text>
+    <text x="50" y="27" font-size="14" font-weight="700" fill="#1e3a8a" letter-spacing="1.2">PHASE 4 · SPEC VALIDATION</text>
+    <rect x="534" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#3b82f6" stroke-width="1"/>
+    <text x="607" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#1e3a8a">/opsx:verify</text>
+    <g color="#1e3a8a"><use href="#ic-clipboard" x="708" y="14" width="16" height="16"/></g>
+    <line x1="0" y1="44" x2="740" y2="44" stroke="#bfdbfe" stroke-width="1"/>
+
+    <!-- 5 checks list -->
+    <g transform="translate(20, 60)">
+      <text x="0" y="12" font-size="12" font-weight="600" fill="#1e3a8a">5 verification checks → recorded in <tspan class="mono">verify.md</tspan></text>
+
+      <g font-size="12" fill="#0f172a">
+        <text x="6" y="38" fill="#3b82f6" font-weight="700">①</text>
+        <text x="32" y="38" class="mono" font-weight="600">openspec validate --all --json</text>
+        <text x="32" y="54" fill="#64748b">all PASS — structural validation</text>
+
+        <text x="6" y="78" fill="#3b82f6" font-weight="700">②</text>
+        <text x="32" y="78">Task completion — every <tspan class="mono">- [ ]</tspan> in <tspan class="mono">tasks.md</tspan> is now <tspan class="mono">- [x]</tspan></text>
+
+        <text x="6" y="102" fill="#3b82f6" font-weight="700">③</text>
+        <text x="32" y="102">Delta spec sync — <tspan class="mono">changes/&lt;name&gt;/specs/</tspan> synced into <tspan class="mono">openspec/specs/</tspan></text>
+
+        <text x="6" y="126" fill="#3b82f6" font-weight="700">④</text>
+        <text x="32" y="126">Coherence — design decisions ↔ spec requirements still consistent<tspan fill="#64748b">  (warning, non-blocking)</tspan></text>
+
+        <text x="6" y="150" fill="#3b82f6" font-weight="700">⑤</text>
+        <text x="32" y="150">Implementation signal — no unstaged files in the worktree</text>
+      </g>
+    </g>
+  </g>
+
+  <line x1="450" y1="1284" x2="450" y2="1320" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========================================================= -->
+  <!-- ========== PHASE 5 · ARCHIVAL =========================== -->
+  <!-- ========================================================= -->
+  <g transform="translate(80, 1328)">
+    <rect x="0" y="0" width="740" height="190" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#ede9fe"/>
+    <circle cx="26" cy="22" r="14" fill="#8b5cf6"/>
+    <text x="26" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">5</text>
+    <text x="50" y="27" font-size="14" font-weight="700" fill="#5b21b6" letter-spacing="1.2">PHASE 5 · ARCHIVAL</text>
+    <!-- entrypoint chip -->
+    <rect x="518" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="591" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#5b21b6">/opsx:archive</text>
+    <g color="#5b21b6"><use href="#ic-hybrid" x="692" y="14" width="32" height="16"/></g>
+    <line x1="0" y1="44" x2="740" y2="44" stroke="#ddd6fe" stroke-width="1"/>
+
+    <!-- substep 1 -->
+    <g transform="translate(20, 60)">
+      <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+      <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">superpowers:finishing-a-development-branch</text>
+      <text x="36" y="30" font-size="12" fill="#475569">Git hygiene — merge · PR · worktree teardown</text>
+    </g>
+
+    <!-- substep 2 -->
+    <g transform="translate(20, 116)">
+      <circle cx="14" cy="14" r="13" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <g color="#1e3a8a"><use href="#ic-clipboard" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">openspec archive
+        <tspan font-weight="400" fill="#64748b" class="mono">  (invoked by /opsx:archive)</tspan>
+      </text>
+      <text x="36" y="30" font-size="12" fill="#475569">Apply deltas to <tspan class="mono">openspec/specs/</tspan> · order: RENAMED → REMOVED → MODIFIED → ADDED</text>
+      <text x="36" y="46" font-size="12" fill="#475569">Move <tspan class="mono">changes/&lt;name&gt;/</tspan> → archive · history hygiene</text>
+    </g>
+  </g>
+
+  <line x1="450" y1="1518" x2="450" y2="1554" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ================== END NODE ================== -->
+  <g transform="translate(280, 1562)">
+    <rect x="0" y="0" width="340" height="44" rx="22" fill="#dcfce7" stroke="#16a34a" stroke-width="2" filter="url(#cardShadow)"/>
+    <g color="#16a34a"><use href="#ic-check" x="20" y="14" width="16" height="16"/></g>
+    <text x="180" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#14532d">
+      Shipped &amp; archived · specs in sync
+    </text>
+  </g>
+
+  <!-- ================== footer ================== -->
+  <text x="450" y="1660" text-anchor="middle" font-size="11" fill="#94a3b8">
+    Superspec · OpenSpec orchestrates · Superpowers executes · See docs/workflow-details.md for the 9-step expansion
+  </text>
+
+</svg>

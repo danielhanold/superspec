@@ -28,7 +28,7 @@ OpenSpec supports custom schemas, and Superspec is exactly that — a drop-in sc
 
 ## Concepts
 
-> **Looking for a phase-by-phase walkthrough?** See **[docs/workflow.md](docs/workflow.md)** — it expands the five phases into the nine concrete steps that drive them, with the why behind each step, which source system (OpenSpec or Superpowers) owns it, and which step from the other source it replaces.
+> **Looking for the workflow map?** See **[docs/workflow.md](docs/workflow.md)** for the visual overview, or **[docs/workflow-details.md](docs/workflow-details.md)** for the full nine-step breakdown.
 
 ### The five phases of a Superspec change
 
@@ -122,7 +122,7 @@ Once installed, you have two flows.
 Stop at each artifact, review it, give feedback, and only continue when you're satisfied. This is the default flow for any non-trivial change — human-in-the-loop at every checkpoint.
 
 ```bash
-/opsx:new my-feature   # Schema flag not needed — superspec is the configured default
+/opsx:new my-feature   # → starts a new change (use change name or description of what you want to build)
 /opsx:continue         # → brainstorm (interactive conversation)
 /opsx:continue         # → proposal
 /opsx:continue         # → design (optional, only when technical decisions need explanation)
@@ -157,7 +157,8 @@ To skip Superspec for a single change and use the upstream schema instead:
 
 ## Further reading
 
-- [`docs/workflow.md`](docs/workflow.md) — phase-by-phase walkthrough of the nine Superspec phases (mental model, why required, source phase, replaced step)
+- [`docs/workflow.md`](docs/workflow.md) — visual overview and quick mental model for the five-phase workflow
+- [`docs/workflow-details.md`](docs/workflow-details.md) — full nine-step walkthrough with per-step rationale, owner, and fallback notes
 - [`docs/project-layout.md`](docs/project-layout.md) — files and directories Superspec adds under `openspec/` after install
 - [`openspec/schemas/superspec/README.md`](openspec/schemas/superspec/README.md) — design motivation and rationale
 - [`openspec/schemas/superspec/INTEGRATION.md`](openspec/schemas/superspec/INTEGRATION.md) — full lifecycle, CLI cheat sheet, and design choices

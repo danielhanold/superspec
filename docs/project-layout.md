@@ -33,5 +33,6 @@ Once you start working on changes, OpenSpec adds `openspec/changes/<change-name>
 ## See also
 
 - [README → Installation](../README.md#installation) — how the layout above gets created
-- [docs/workflow.md](workflow.md) — what happens inside `openspec/changes/<name>/` for each phase
+- [docs/workflow.md](workflow.md) — visual overview of the workflow
+- [docs/workflow-details.md](workflow-details.md) — what happens inside `openspec/changes/<name>/` for each phase
 - [`openspec/schemas/superspec/INTEGRATION.md`](../openspec/schemas/superspec/INTEGRATION.md) — schema-internal layout and CLI commands
