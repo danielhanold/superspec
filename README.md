@@ -47,22 +47,68 @@ Each phase produces concrete artifacts in the change directory and (where applic
 ## Installation
 
 **Prerequisites**
+- [Homebrew](https://brew.sh/) strongly preferred.
 
-- A git repository (run `git init` if you don't have one yet).
-- An agent harness — Claude Code, Cursor, GitHub Copilot, OpenAI Codex, or Gemini.
-- Homebrew on macOS for the `brew install openspec` step. On other platforms, install OpenSpec from its [release page](https://github.com/Fission-AI/OpenSpec/releases).
+### Install OpenSpec and SuperPowers
 
-### 1. Install Superpowers
-
-Install for your agent harness — globally, or scoped to the current repository. Follow the instructions in the Superpowers README: [Superpowers Install Steps](https://github.com/obra/superpowers#installation)
-
-### 2. Install OpenSpec
-
+#### Install OpenSpec
 ```bash
 brew install openspec
 ```
 
-### 3. Initialize OpenSpec for your harness
+If Homebrew is unavailable, [install OpenSpec via a different package manager](https://github.com/Fission-AI/OpenSpec/blob/main/docs/installation.md).
+
+#### Install Superpowers
+Install globally for your agent harness. Follow the [instructions in the Superpowers docs](https://github.com/obra/superpowers#installation).
+
+### Configure OpenSpec
+
+#### OpenSpec Global configuration (one-time only)
+
+Requires [jq](https://github.com/jqlang/jq) to be installed for full automation.
+Copy commands below and run.
+
+```bash
+# Backup and remove any existing global OpenSpec configurations.
+OPENSPEC_CONFIG_PATH="$(openspec config path)"
+OPENSPEC_CONFIG_PATH_BACKUP="${OPENSPEC_CONFIG_PATH}.$(date +%s).bkp"
+if [[ -f "${OPENSPEC_CONFIG_PATH}" ]]; then
+  printf "Found existing OpenSpec config: %s\n" "${OPENSPEC_CONFIG_PATH}"
+  printf "Will back up existing config (%s), then delete.\n" "${OPENSPEC_CONFIG_PATH_BACKUP}"
+  cp "${OPENSPEC_CONFIG_PATH}" "${OPENSPEC_CONFIG_PATH_BACKUP}"
+  rm "${OPENSPEC_CONFIG_PATH}"
+fi
+
+# Uncomment to disable telemtry
+# OPENSPEC_TELEMETRY=0
+
+# Create global OpenSpec config with core profile.
+openspec config profile core
+
+# Set correct profile and delivery (commands and skills)
+openspec config set profile custom
+openspec config set delivery both
+
+# Enable all required workflows.
+# Requires jq to be installed, otherwise enable all workflows by running this interactive mode: `openspec config profile`
+if command -v jq >/dev/null 2>&1; then
+  OPENSPEC_CONFIG_PATH="$(openspec config path)"
+  OPENSPEC_TMP_FILE="$(mktemp)"
+  jq '.workflows = ["propose", "explore", "new", "continue", "apply", "ff", "sync", "archive", "bulk-archive", "verify"]' "$OPENSPEC_CONFIG_PATH" > "$OPENSPEC_TMP_FILE" && mv "$OPENSPEC_TMP_FILE" "$OPENSPEC_CONFIG_PATH"
+  printf "\nSuccess\!\n\nOpenSpec is correctly configured for SuperSpec and has the following workflows enabled: \n%s\n\n" "$(openspec config get workflows)"
+else
+  printf "\nWarning: jq was not found on your system.\n\nRun the following command manually:\nopenspec config profile\n\n"
+  printf "During interactive process:\n  Select: Change \"Workflows Only\"\n  Enable all workflows\n\n"
+  printf "Once completed, run this command to confirm all workflows are available:\nopenspec config get workflows\n"
+fi
+
+```
+
+#### OpenSpec Repository Setup
+
+Execute steps below from the root of your local git repository.
+
+##### 1. Initialize OpenSpec for your harness
 
 The example below initializes for **Cursor**. For other harnesses (Claude Code, Copilot, Codex, Gemini), run `openspec init --help` to see the supported `--tools` values and follow the guided prompts.
 
@@ -70,9 +116,7 @@ The example below initializes for **Cursor**. For other harnesses (Claude Code, 
 openspec init --tools cursor --profile custom
 ```
 
-### 4. Copy the SuperSpec schema into `openspec/schemas`
-
-Run from the root of your local git repository:
+##### 2. Copy the SuperSpec schema into `openspec/schemas`
 
 ```bash
 git clone --depth 1 --filter=blob:none --sparse \
@@ -85,15 +129,13 @@ git clone --depth 1 --filter=blob:none --sparse \
   rm -rf /tmp/superspec-tmp
 ```
 
-The trailing `/.` in `superspec/.` copies the directory's *contents* into the existing `openspec/schemas/superspec/`, avoiding a nested `superspec/superspec/`.
-
-### 5. Set SuperSpec as the default schema
+##### 3. Set SuperSpec as the default schema
 
 ```bash
 echo "schema: superspec" > openspec/config.yaml
 ```
 
-### 6. Verify the install
+##### 4. Verify the install
 
 ```bash
 openspec schemas      # superspec should appear in the list
