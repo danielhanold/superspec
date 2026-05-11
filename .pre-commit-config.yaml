@@ -1,0 +1,40 @@
+# Environment configuration:
+# export PRE_COMMIT_COLOR=never
+
+# Pre-Commit configuration.
+# @see https://pre-commit.com/#script
+
+# Set to true to have pre-commit stop running hooks after the first failure.
+fail_fast: false
+
+# A configuration-wide default for the stages property of hooks.
+# This will only override individual hooks that do not set stages.
+default_stages:
+- pre-commit
+- pre-push
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  # Check for files with names that would conflict on a case-insensitive filesystem like MacOS HFS+ or Windows FAT.
+  - id: check-case-conflict
+
+  # Check for files that cannot be created on Windows.
+  - id: check-illegal-windows-names
+
+  # Check for files that have merge conflicts.
+  - id: check-merge-conflict
+    args:
+    - --assume-in-merge
+
+  # Trims trailing whitespace.
+  - id: trailing-whitespace
+
+  # Replaces or checks mixed line ending - automatically with the most frequent line ending.
+  - id: mixed-line-ending
+    args:
+    - --fix=lf
+
+  # Makes sure files end in a newline and only a newline.
+  - id: end-of-file-fixer
