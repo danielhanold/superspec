@@ -353,11 +353,16 @@ apply:
        to check completeness, correctness, and coherence. The DAG
        blocks `verify` until apply.md exists.
 
-       Convergence loop: if verify reports FAIL with items fixable
-       by a code change, return to step 2 (Executor), re-run with
-       the same iteration mechanics (apply.md is overwritten,
-       iteration counter increments), then re-run verify. Stop and
-       report to the user if iteration > 5.
+       Convergence loop — react to the verify outcome:
+       - PASS or PASS_WITH_WARNINGS → proceed to step 5 (Completion).
+       - FAIL with code-fixable items → return to step 2 (Executor),
+         re-run with the same iteration mechanics (apply.md is
+         overwritten, iteration counter increments), then re-run verify.
+       - FAIL with artifact-level items (e.g. spec drift) → fix the
+         offending artifact (specs / design / tasks / plan), then
+         re-enter step 2 with iteration N+1.
+       - Iteration > 5 → stop the loop and report to the user instead
+         of continuing automatically.
 
     5. **Completion**: Once verify.md shows no blocking issues,
        use the Skill tool to invoke
