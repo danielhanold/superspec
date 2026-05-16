@@ -28,20 +28,21 @@ A custom schema leverages OpenSpec's **natively supported project-level schema m
 ## Workflow Overview
 
 ```text
-brainstorm ──→ proposal ──→ specs ──→ tasks ──→ plan
+brainstorm ──→ proposal ──→ specs ──→ tasks ──→ plan ──→ apply ──→ verify
                   │                     ↑
                   └──→ design ──────────┘
 ```
 
 Differences from `spec-driven`:
 
-| | spec-driven | sdd-plus-superpowers |
+| | spec-driven | sdd-plus-superpowers (v2) |
 |---|---|---|
 | Starting point | proposal (written manually) | **brainstorm** (invokes brainstorming skill) |
-| Endpoint | tasks (coarse-grained) | **plan** (micro TDD steps) |
+| Endpoint | tasks (coarse-grained) | **verify** (post-implementation report; apply is the executable midpoint) |
 | apply requires | tasks | **plan** |
 | apply method | Standard task-by-task | **worktree + subagent-driven-development** |
-| Additional artifacts | — | brainstorm, plan |
+| Additional artifacts | — | brainstorm, plan, **apply (receipt)** |
+| verify requires | tasks | **apply** (v2 — was plan in v1) |
 
 ---
 
@@ -116,6 +117,12 @@ Brainstorming is an interactive multi-turn conversation that requires user parti
 - `plan.md` → Guides subagents through step-by-step implementation (input for the executor)
 
 The apply phase requires `plan` rather than `tasks` because the executor needs micro steps to work effectively. However, `tracks: tasks.md` ensures progress is still tracked via coarse-grained checkboxes.
+
+### Why apply Is Both an Artifact and a Phase Block (v2)
+
+The OpenSpec CLI builds its DAG strictly from the `artifacts:` list, and the `ApplyPhase` zod schema has no `generates` field — so the apply phase alone cannot mark itself complete or be referenced by another artifact's `requires`. In v1 this manifested as `verify.requires: [plan]` plus an inline comment saying "actually verify needs apply, but the schema can't say so." Agents predictably ran verify before apply.
+
+v2 solves this by representing apply twice: a real artifact (`generates: apply.md`, `requires: [plan]`) so `verify.requires: [apply]` is honest, *and* the existing `apply:` top-level block so `/opsx:apply` CLI behavior is unchanged (the handler reads `schema.apply.instruction` and would not see the artifact's instruction). To avoid drift, the canonical body lives in the `apply:` block; the apply artifact's instruction is a short redirect.
 
 ### Fallback Strategy
 

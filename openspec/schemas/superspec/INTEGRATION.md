@@ -2,7 +2,7 @@
 
 > This document explains how the `sdd-plus-superpowers` schema integrates OpenSpec's artifact governance workflow with Superpowers' execution skills into a single workflow. It serves as a reference table for new member onboarding, change reviews, and as required reading before modifying the schema.
 >
-> Corresponding schema version: `sdd-plus-superpowers` v1
+> Corresponding schema version: `sdd-plus-superpowers` v2
 
 ---
 
@@ -25,7 +25,7 @@ The two are integrated through a custom schema [schema.yaml](./schema.yaml). The
 | 4 | `superpowers:subagent-driven-development` | apply step 2a | Direct |
 | 5 | `superpowers:test-driven-development` | (auto-triggered inside #4) | **Transitive** (SKILL.md L205 / L274) |
 | 6 | `superpowers:requesting-code-review` | (auto-triggered inside #4) | **Transitive** (SKILL.md L270) |
-| 7 | `superpowers:finishing-a-development-branch` | apply step 4 | Direct |
+| 7 | `superpowers:finishing-a-development-branch` | apply step 5 | Direct |
 
 There is also one **fallback**:
 
@@ -61,28 +61,30 @@ There is also one **fallback**:
        │    │  plan    │ ◄── superpowers:writing-plans
        │    └────┬─────┘     (2-5 minute micro-steps)
        │         │
-       │         │ ─────────┐
-       │         │          │
-       │         │     ┌────▼──────┐
-       │         │     │  apply    │ ◄── superpowers:using-git-worktrees
-       │         │     │  (phase)  │ ◄── superpowers:subagent-driven-development
-       │         │     │           │         ├── superpowers:test-driven-development (transitive)
-       │         │     │           │         └── superpowers:requesting-code-review (transitive)
-       │         │     │           │ ◄── superpowers:finishing-a-development-branch
-       │         │     └────┬──────┘
-       │         │          │
-       ▼         ▼          ▼
-    ┌──────────┐    ┌──────────┐
-    │  design  │    │  verify  │ ◄── openspec-verify-change (5 checks)
-    │ (optional)│   └──────────┘
+       │         ▼
+       │    ┌──────────┐
+       │    │  apply   │ ◄── superpowers:using-git-worktrees
+       │    │ (DAG +   │ ◄── superpowers:subagent-driven-development
+       │    │  apply:  │         ├── superpowers:test-driven-development (transitive)
+       │    │  phase)  │         └── superpowers:requesting-code-review (transitive)
+       │    │          │ ◄── superpowers:finishing-a-development-branch
+       │    │ writes   │
+       │    │ apply.md │
+       │    └────┬─────┘
+       │         │
+       ▼         ▼
+    ┌──────────┐ ┌──────────┐
+    │  design  │ │  verify  │ ◄── openspec-verify-change (5 checks)
+    │(optional)│ └──────────┘
     └──────────┘
 ```
 
 **Key points**:
 
 - `design` is an **optional leaf**. Brainstorm still attempts to pre-populate design.md, but tasks no longer hard-depend on it (`tasks.requires: [specs]`). Per OpenSpec conventions: `design.md` is only written when non-trivial technical decisions need explanation.
-- `verify`'s `requires: [plan]` exists to keep the schema graph complete; its instruction explicitly states "**MUST run on a completed implementation, NOT during planning**." This is a deliberate mismatch between the OpenSpec DAG and actual sequencing, so that `openspec status` can display verify progress.
-- `apply` does not produce an artifact — it is a **phase** that modifies source code + tasks.md checkboxes.
+- `apply` is now a **real DAG node** as of schema v2. It generates `apply.md` (a minimal receipt — iteration counter, worktree, branch, commit range, task counts) so the DAG can honestly express "verify depends on apply having run." The canonical `/opsx:apply` instruction body still lives in the top-level `apply:` phase block; the apply artifact's own instruction is a short redirect to avoid drift.
+- `verify` now requires `apply` (was `plan` in v1). The OpenSpec CLI will refuse to surface verify as a `ready` artifact until `apply.md` exists.
+- The convergence loop (apply → verify → loop back on code-fixable FAILs, capped at 5 iterations) is documented in `docs/workflow-details.md`. The schema enforces the file-existence dependency; the iteration decision is made by the agent or by a future loop-runner command (not in v2 scope).
 
 ---
 
@@ -189,7 +191,11 @@ Before creating the worktree, confirm that `openspec/changes/<name>/` is tracked
 
 > **2b fallback**: Only use `superpowers:executing-plans` when the current platform lacks subagent support. Claude Code has subagents, so always use 2a. If forced to use 2b, you must manually maintain TDD discipline and invoke `superpowers:requesting-code-review`.
 
-#### 3-3. Verification — Invoke `openspec-verify-change` (produces `verify.md`)
+#### 3-3. Receipt — Write `apply.md`
+
+Before invoking verify, the executor writes a minimal `apply.md` receipt per `openspec/schemas/superspec/templates/apply.md`: change name, iteration counter (1 on first apply, incremented on re-entry), applied-at timestamp, executor identity, worktree path, branch, commit range, and `X of Y` tasks completed. This is the v2 DAG artifact that satisfies `verify.requires: [apply]`. If `apply.md` already exists in the change directory, read its `Iteration:` field, increment by one, and overwrite the file.
+
+#### 3-4. Verification — Invoke `openspec-verify-change` (produces `verify.md`)
 
 5 checks:
 
@@ -201,13 +207,13 @@ Before creating the worktree, confirm that `openspec/changes/<name>/` is tracked
 
 If any check fails, go back to the corresponding artifact, fix it, and re-run verify.
 
-#### 3-4. Completion — Invoke `superpowers:finishing-a-development-branch`
+#### 3-5. Completion — Invoke `superpowers:finishing-a-development-branch`
 
 - Confirm all tests are green
 - Present options: merge / PR / keep branch / discard
 - Clean up the worktree
 
-#### 3-5. Retrospective (Recommended, Non-blocking)
+#### 3-6. Retrospective (Recommended, Non-blocking)
 
 **Not a mandatory step, but strongly recommended**: Before archiving, produce a `retrospective.md` in the change directory. The retrospective is a "self-review" of the entire change — it captures things the diff cannot show: why a decision was made, what surprised you, and which lessons learned are worth promoting to long-term memory.
 
@@ -278,9 +284,19 @@ TDD and code-review are originally hidden inside subagent-driven-development (on
 
 2b (executing-plans) exists but is labeled as a "platforms without subagent support" fallback, citing the official superpowers SKILL.md L14 verbatim. We don't invent custom rules like "use 2b for small changes."
 
-### 5. Verify is a leaf in the schema graph but runs after apply
+### 5. Apply is a real artifact, not a hidden phase (v2)
 
-`verify`'s `requires: [plan]` is only there to keep the schema graph complete; its instruction explicitly states "**MUST run on a completed implementation, NOT during planning**." This is a deliberate mismatch between the OpenSpec DAG and actual sequencing, so that `openspec status` can display verify progress.
+In schema v1, `verify.requires: [plan]` was a deliberate lie — the comment said "this edge exists only for the graph; actually verify must run after apply." That was unenforceable: agents read the DAG, saw verify reachable as soon as plan was done, and ran verify before apply.
+
+In v2, `apply` is promoted to a real artifact (generating `apply.md`, a minimal receipt) so `verify.requires: [apply]` is honest. The schema graph and the actual sequencing now agree. The top-level `apply:` block is preserved so `/opsx:apply` continues to surface the canonical worktree+subagent instruction body — the apply artifact's own instruction is a short redirect to keep a single source of truth.
+
+This change also unlocks the documented apply → verify → repeat convergence loop, since `verify.md` outcomes can now feed cleanly back into a re-run of apply with an incremented iteration counter. See `docs/workflow-details.md` for the loop pattern.
+
+### Migration from schema v1
+
+If a project pinned to schema v1 has in-flight changes whose `verify.md` was authored before v2 landed but no `apply.md` exists in the change directory, `/opsx:verify` will report the change as blocked under v2 (missing required artifact `apply`).
+
+Migration: author a minimal `apply.md` by hand from `openspec/schemas/superspec/templates/apply.md` — set `Iteration: 1`, fill the worktree path, branch, commit range, and task counts from the existing implementation, then re-run `/opsx:verify`. This is a one-time migration cost per in-flight change; no archived changes are affected.
 
 ---
 

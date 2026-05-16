@@ -6,6 +6,7 @@
 
 **Change**: `<change-name>`
 **Verified at**: `YYYY-MM-DD HH:mm`
+**Iteration**: `<integer; copy from apply.md>`
 **Verifier**: `<who / which agent>`
 
 ---
@@ -84,3 +85,10 @@ Scenarios in `specs/*.md`:
 **Next step**:
 
 <describe the next action>
+
+> **Convergence loop reminder**: If you marked FAIL with items
+> fixable by a code change, return to the apply artifact and re-run
+> `/opsx:apply`, then re-run `/opsx:verify` — this overwrites both
+> apply.md and verify.md with the next iteration. If the iteration
+> counter has exceeded 5, stop the loop and report the situation to
+> the user instead of continuing.

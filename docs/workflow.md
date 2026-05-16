@@ -36,9 +36,9 @@ Primary outputs: `proposal.md`, `design.md`, `specs/*/spec.md`, `tasks.md`, `pla
 
 ### 3. Code Implementation
 
-Implementation runs through the Superpowers execution loop: isolated worktree, subagent-driven development, TDD, code review, and task checkbox updates.
+Implementation runs through the Superpowers execution loop: isolated worktree, subagent-driven development, TDD, code review, and task checkbox updates. At the end of the phase, an `apply.md` receipt is written so the DAG can gate `verify` on apply having completed.
 
-Primary outputs: code, tests, commits, and completed `tasks.md` checkboxes.
+Primary outputs: code, tests, commits, completed `tasks.md` checkboxes, and `apply.md` (the minimal completion receipt).
 
 ### 4. Spec Validation
 
