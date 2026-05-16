@@ -179,14 +179,15 @@ The Code Implementation phase produces the actual code for the change, executed 
 
 **Why it's required.** This is the phase that actually changes code, config, or system state. In Superspec it is intentionally delegated to Superpowers' stricter execution loop instead of vanilla OpenSpec apply, so every task ships through the same TDD-and-review pipeline.
 
-**What the step does.** The apply phase chains four Superpowers skills (with two more triggered transitively):
+**What the step does.** The apply phase chains four Superpowers skills (with two more triggered transitively) and writes a receipt:
 
 1. **`using-git-worktrees`** — creates an isolated workspace at `.worktrees/<change-name>/`, switches to a new branch, runs project setup, and confirms a clean test baseline.
 2. **`subagent-driven-development`** (default path, requires subagent support) — the main agent reads `plan.md` and dispatches a fresh subagent per micro-task. Each subagent transitively activates:
    - **`test-driven-development`** — write a failing test first, watch it fail, then write the minimum code to make it pass. Implementation written before a failing test is deleted and redone.
    - **`requesting-code-review`** — after each task, a code-reviewer subagent checks spec compliance and code quality. A final review runs over the whole implementation before apply concludes.
    - As coarse tasks complete, `tasks.md` checkboxes flip to `- [x]`.
-3. **`finishing-a-development-branch`** — only invoked at the very end; covered in phase 9 below.
+3. **Receipt** — at the end of the phase, a minimal `apply.md` is written per `openspec/schemas/superspec/templates/apply.md`: iteration counter, applied-at timestamp, executor identity, worktree path, branch, commit range, and tasks completed X of Y. This is the v2 DAG artifact that gates `verify`. If `apply.md` already exists, the iteration counter is incremented.
+4. **`finishing-a-development-branch`** — only invoked at the very end; covered in phase 9 below.
 
 **Pre-flight requirement.** Before creating the worktree, the change directory `openspec/changes/<name>/` must already be committed on the current branch. Otherwise, when the worktree merges back, git will refuse with "untracked files would be overwritten by merge."
 
@@ -195,6 +196,38 @@ The Code Implementation phase produces the actual code for the change, executed 
 **Source phase used.** `superpowers:using-git-worktrees`, `superpowers:subagent-driven-development`, `superpowers:test-driven-development`, `superpowers:requesting-code-review`.
 
 **Step not used / replaced and why.** Vanilla `/opsx:apply` execution is effectively overridden. OpenSpec apply can work through tasks directly, but Superspec chooses Superpowers' stricter loop with isolated worktrees, subagents, TDD, and review. The OpenSpec docs show `/opsx:apply` "working through tasks," but in this schema Superpowers is the executor.
+
+### Convergence loop (apply → verify → repeat)
+
+Because `apply.md` and `verify.md` are both overwritten on each iteration and both carry the same `Iteration:` counter, Superspec supports (and recommends) a convergence loop where apply and verify run repeatedly until verify reports a clean state.
+
+```text
+        plan
+         │
+         ▼
+       apply  ────► apply.md   (iteration N)
+         │
+         ▼
+       verify ────► verify.md  (iteration N)
+         │
+         ├── PASS or PASS_WITH_WARNINGS ──► finishing-a-development-branch → archive
+         │
+         ├── FAIL, items fixable by code change ──► return to apply (N+1)
+         │
+         ├── FAIL, items in artifacts (spec drift) ──► fix artifact → apply (N+1)
+         │
+         └── Iteration > 5 ──► stop; report to the user
+```
+
+Termination rules (recorded in the verify instruction and the `apply.md` "Next step" field):
+
+- **PASS** — proceed to `finishing-a-development-branch` and archive.
+- **PASS_WITH_WARNINGS** — proceed; warnings are recorded for posterity but do not block.
+- **FAIL with code-fixable items** — return to the apply phase, re-run, overwrite `apply.md` with iteration N+1, then re-run verify.
+- **FAIL with artifact-level items** (e.g. spec drift, a requirement that is no longer satisfied by the plan) — fix the offending artifact first, then re-enter apply with iteration N+1.
+- **Iteration > 5** — stop the loop and report to the user. This is a soft safeguard against non-convergence; the schema enforces nothing here, but the verify instruction tells the agent to halt the pattern.
+
+The schema enforces only the file-existence dependency (`verify.requires: [apply]`). The iteration decision — whether to loop, stop, or escalate — is made by the agent (or, in a follow-up change, by a dedicated loop-runner command). No automated loop runner ships with v2.
 
 ---
 
@@ -209,6 +242,8 @@ The Spec Validation phase proves the implementation actually matches the proposa
 **Brief why:** Prove it matches intent.
 
 **Why it's required.** Verify closes the loop between intent and implementation. It checks that the proposal, specs, design, tasks, and the actual code still agree before the change is considered complete. Code review alone — even a thorough Superpowers review — only checks that the code matches the *plan*; it does not check that the plan still matches the *specs*.
+
+As of schema v2, `verify.requires: [apply]` — the DAG genuinely gates verify on the existence of `apply.md`. In v1 the dependency was declared as `[plan]` with a comment that "actually verify needs apply"; that mismatch was a frequent source of agents running verify before apply had executed. The v2 schema removes the mismatch.
 
 **What the step does.** Invokes `openspec-verify-change` (the user-facing equivalent is `/opsx:verify`). Five checks are run, with results recorded in `verify.md`:
 
