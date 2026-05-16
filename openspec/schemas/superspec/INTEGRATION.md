@@ -2,7 +2,7 @@
 
 > This document explains how the `sdd-plus-superpowers` schema integrates OpenSpec's artifact governance workflow with Superpowers' execution skills into a single workflow. It serves as a reference table for new member onboarding, change reviews, and as required reading before modifying the schema.
 >
-> Corresponding schema version: `sdd-plus-superpowers` v1
+> Corresponding schema version: `sdd-plus-superpowers` v2
 
 ---
 
@@ -25,7 +25,7 @@ The two are integrated through a custom schema [schema.yaml](./schema.yaml). The
 | 4 | `superpowers:subagent-driven-development` | apply step 2a | Direct |
 | 5 | `superpowers:test-driven-development` | (auto-triggered inside #4) | **Transitive** (SKILL.md L205 / L274) |
 | 6 | `superpowers:requesting-code-review` | (auto-triggered inside #4) | **Transitive** (SKILL.md L270) |
-| 7 | `superpowers:finishing-a-development-branch` | apply step 4 | Direct |
+| 7 | `superpowers:finishing-a-development-branch` | apply step 5 | Direct |
 
 There is also one **fallback**:
 
@@ -191,7 +191,11 @@ Before creating the worktree, confirm that `openspec/changes/<name>/` is tracked
 
 > **2b fallback**: Only use `superpowers:executing-plans` when the current platform lacks subagent support. Claude Code has subagents, so always use 2a. If forced to use 2b, you must manually maintain TDD discipline and invoke `superpowers:requesting-code-review`.
 
-#### 3-3. Verification — Invoke `openspec-verify-change` (produces `verify.md`)
+#### 3-3. Receipt — Write `apply.md`
+
+Before invoking verify, the executor writes a minimal `apply.md` receipt per `openspec/schemas/superspec/templates/apply.md`: change name, iteration counter (1 on first apply, incremented on re-entry), applied-at timestamp, executor identity, worktree path, branch, commit range, and `X of Y` tasks completed. This is the v2 DAG artifact that satisfies `verify.requires: [apply]`. If `apply.md` already exists in the change directory, read its `Iteration:` field, increment by one, and overwrite the file.
+
+#### 3-4. Verification — Invoke `openspec-verify-change` (produces `verify.md`)
 
 5 checks:
 
@@ -203,13 +207,13 @@ Before creating the worktree, confirm that `openspec/changes/<name>/` is tracked
 
 If any check fails, go back to the corresponding artifact, fix it, and re-run verify.
 
-#### 3-4. Completion — Invoke `superpowers:finishing-a-development-branch`
+#### 3-5. Completion — Invoke `superpowers:finishing-a-development-branch`
 
 - Confirm all tests are green
 - Present options: merge / PR / keep branch / discard
 - Clean up the worktree
 
-#### 3-5. Retrospective (Recommended, Non-blocking)
+#### 3-6. Retrospective (Recommended, Non-blocking)
 
 **Not a mandatory step, but strongly recommended**: Before archiving, produce a `retrospective.md` in the change directory. The retrospective is a "self-review" of the entire change — it captures things the diff cannot show: why a decision was made, what surprised you, and which lessons learned are worth promoting to long-term memory.
 

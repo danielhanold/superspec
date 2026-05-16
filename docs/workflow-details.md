@@ -219,7 +219,7 @@ Because `apply.md` and `verify.md` are both overwritten on each iteration and bo
          └── Iteration > 5 ──► stop; report to the user
 ```
 
-Termination rules (recorded in the verify instruction and the `apply.md` "Next step" field):
+Termination rules (recorded in the verify artifact instruction and the apply: phase block step 4 in schema.yaml):
 
 - **PASS** — proceed to `finishing-a-development-branch` and archive.
 - **PASS_WITH_WARNINGS** — proceed; warnings are recorded for posterity but do not block.

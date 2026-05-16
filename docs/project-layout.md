@@ -17,6 +17,7 @@ openspec/
             ├── spec.md
             ├── tasks.md
             ├── plan.md
+            ├── apply.md
             └── verify.md
 ```
 
@@ -28,7 +29,7 @@ openspec/
 | `openspec/schemas/superspec/INTEGRATION.md` | Full lifecycle, CLI cheat sheet, and design-choice rationale. |
 | `openspec/schemas/superspec/templates/` | Markdown stubs copied into a new change directory when the matching artifact is generated. |
 
-Once you start working on changes, OpenSpec adds `openspec/changes/<change-name>/` directories at the same level as `schemas/`, holding the per-change `proposal.md`, `design.md`, `specs/`, `tasks.md`, `plan.md`, and `verify.md` artifacts. After archival, completed changes move into `openspec/changes/archive/`.
+Once you start working on changes, OpenSpec adds `openspec/changes/<change-name>/` directories at the same level as `schemas/`, holding the per-change `proposal.md`, `design.md`, `specs/`, `tasks.md`, `plan.md`, `apply.md`, and `verify.md` artifacts. After archival, completed changes move into `openspec/changes/archive/`.
 
 ## See also
 
