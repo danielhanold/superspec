@@ -174,15 +174,10 @@ artifacts:
       instead. The canonical implementation instructions live in the
       top-level `apply:` phase block below.
 
-      apply.md is a minimal receipt written at the end of the apply
-      phase: change name, iteration counter, applied-at timestamp,
-      executor, worktree path, branch, commit range, tasks completed
-      X of Y, and remaining tasks. Verification outcome is recorded in
-      verify.md (Overall Decision section), not here.
-
-      If apply.md already exists when re-entering apply, read its
-      `Iteration:` field and increment by one; otherwise default to
-      iteration 1. Overwrite the file each time.
+      apply.md is a minimal receipt — its template lives at
+      `templates/apply.md`; its production is documented in the apply:
+      phase block. Verification outcome is recorded in verify.md
+      (Overall Decision section), not here.
     requires:
       - plan
 
