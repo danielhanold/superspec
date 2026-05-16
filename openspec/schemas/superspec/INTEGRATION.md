@@ -61,28 +61,30 @@ There is also one **fallback**:
        │    │  plan    │ ◄── superpowers:writing-plans
        │    └────┬─────┘     (2-5 minute micro-steps)
        │         │
-       │         │ ─────────┐
-       │         │          │
-       │         │     ┌────▼──────┐
-       │         │     │  apply    │ ◄── superpowers:using-git-worktrees
-       │         │     │  (phase)  │ ◄── superpowers:subagent-driven-development
-       │         │     │           │         ├── superpowers:test-driven-development (transitive)
-       │         │     │           │         └── superpowers:requesting-code-review (transitive)
-       │         │     │           │ ◄── superpowers:finishing-a-development-branch
-       │         │     └────┬──────┘
-       │         │          │
-       ▼         ▼          ▼
-    ┌──────────┐    ┌──────────┐
-    │  design  │    │  verify  │ ◄── openspec-verify-change (5 checks)
-    │ (optional)│   └──────────┘
+       │         ▼
+       │    ┌──────────┐
+       │    │  apply   │ ◄── superpowers:using-git-worktrees
+       │    │ (DAG +   │ ◄── superpowers:subagent-driven-development
+       │    │  apply:  │         ├── superpowers:test-driven-development (transitive)
+       │    │  phase)  │         └── superpowers:requesting-code-review (transitive)
+       │    │          │ ◄── superpowers:finishing-a-development-branch
+       │    │ writes   │
+       │    │ apply.md │
+       │    └────┬─────┘
+       │         │
+       ▼         ▼
+    ┌──────────┐ ┌──────────┐
+    │  design  │ │  verify  │ ◄── openspec-verify-change (5 checks)
+    │(optional)│ └──────────┘
     └──────────┘
 ```
 
 **Key points**:
 
 - `design` is an **optional leaf**. Brainstorm still attempts to pre-populate design.md, but tasks no longer hard-depend on it (`tasks.requires: [specs]`). Per OpenSpec conventions: `design.md` is only written when non-trivial technical decisions need explanation.
-- `verify`'s `requires: [plan]` exists to keep the schema graph complete; its instruction explicitly states "**MUST run on a completed implementation, NOT during planning**." This is a deliberate mismatch between the OpenSpec DAG and actual sequencing, so that `openspec status` can display verify progress.
-- `apply` does not produce an artifact — it is a **phase** that modifies source code + tasks.md checkboxes.
+- `apply` is now a **real DAG node** as of schema v2. It generates `apply.md` (a minimal receipt — iteration counter, worktree, branch, commit range, task counts) so the DAG can honestly express "verify depends on apply having run." The canonical `/opsx:apply` instruction body still lives in the top-level `apply:` phase block; the apply artifact's own instruction is a short redirect to avoid drift.
+- `verify` now requires `apply` (was `plan` in v1). The OpenSpec CLI will refuse to surface verify as a `ready` artifact until `apply.md` exists.
+- The convergence loop (apply → verify → loop back on code-fixable FAILs, capped at 5 iterations) is documented in `docs/workflow-details.md`. The schema enforces the file-existence dependency; the iteration decision is made by the agent or by a future loop-runner command (not in v2 scope).
 
 ---
 
@@ -278,9 +280,19 @@ TDD and code-review are originally hidden inside subagent-driven-development (on
 
 2b (executing-plans) exists but is labeled as a "platforms without subagent support" fallback, citing the official superpowers SKILL.md L14 verbatim. We don't invent custom rules like "use 2b for small changes."
 
-### 5. Verify is a leaf in the schema graph but runs after apply
+### 5. Apply is a real artifact, not a hidden phase (v2)
 
-`verify`'s `requires: [plan]` is only there to keep the schema graph complete; its instruction explicitly states "**MUST run on a completed implementation, NOT during planning**." This is a deliberate mismatch between the OpenSpec DAG and actual sequencing, so that `openspec status` can display verify progress.
+In schema v1, `verify.requires: [plan]` was a deliberate lie — the comment said "this edge exists only for the graph; actually verify must run after apply." That was unenforceable: agents read the DAG, saw verify reachable as soon as plan was done, and ran verify before apply.
+
+In v2, `apply` is promoted to a real artifact (generating `apply.md`, a minimal receipt) so `verify.requires: [apply]` is honest. The schema graph and the actual sequencing now agree. The top-level `apply:` block is preserved so `/opsx:apply` continues to surface the canonical worktree+subagent instruction body — the apply artifact's own instruction is a short redirect to keep a single source of truth.
+
+This change also unlocks the documented apply → verify → repeat convergence loop, since `verify.md` outcomes can now feed cleanly back into a re-run of apply with an incremented iteration counter. See `docs/workflow-details.md` for the loop pattern.
+
+### Migration from schema v1
+
+If a project pinned to schema v1 has in-flight changes whose `verify.md` was authored before v2 landed but no `apply.md` exists in the change directory, `/opsx:verify` will report the change as blocked under v2 (missing required artifact `apply`).
+
+Migration: author a minimal `apply.md` by hand from `openspec/schemas/superspec/templates/apply.md` — set `Iteration: 1`, fill the worktree path, branch, commit range, and task counts from the existing implementation, then re-run `/opsx:verify`. This is a one-time migration cost per in-flight change; no archived changes are affected.
 
 ---
 
