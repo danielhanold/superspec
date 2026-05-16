@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  MIT licensed · Schema version 1 · Requires OpenSpec + Superpowers
+  MIT licensed · Schema version 2 · Requires OpenSpec + Superpowers
 </p>
 
 ---
@@ -171,8 +171,8 @@ Stop at each artifact, review it, give feedback, and only continue when you're s
 /opsx:continue         # → specs (creates delta specs: ADDED / MODIFIED / REMOVED / RENAMED)
 /opsx:continue         # → tasks
 /opsx:continue         # → plan
-/opsx:apply            # Worktree + Superpowers TDD loop — produces the actual code
-/opsx:verify           # Validate implementation matches the delta specs and tasks
+/opsx:apply            # Worktree + Superpowers TDD loop — produces the actual code and writes apply.md (the v2 receipt)
+/opsx:verify           # Validate implementation matches the delta specs and tasks (requires apply.md to exist)
 /opsx:archive          # Sync the change's delta specs into project specs, then archive
 ```
 
@@ -182,8 +182,8 @@ For small, well-understood changes where you trust the agent to produce every ar
 
 ```bash
 /opsx:ff my-feature    # End-to-end: brainstorm + proposal + design + specs + tasks + plan
-/opsx:apply            # Worktree + Superpowers TDD loop — produces the actual code
-/opsx:verify           # Validate implementation matches the delta specs and tasks
+/opsx:apply            # Worktree + Superpowers TDD loop — produces the actual code and writes apply.md (the v2 receipt)
+/opsx:verify           # Validate implementation matches the delta specs and tasks (requires apply.md to exist)
 /opsx:archive          # Sync the change's delta specs into project specs, then archive
 ```
 
