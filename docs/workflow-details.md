@@ -188,7 +188,7 @@ The Code Implementation phase produces the actual code for the change, executed 
    - **`requesting-code-review`** — after each task, a code-reviewer subagent checks spec compliance and code quality. A final review runs over the whole implementation before apply concludes.
    - As coarse tasks complete, `tasks.md` checkboxes flip to `- [x]`.
 3. **Receipt** — at the end of the phase, a minimal `apply.md` is written per `openspec/schemas/superspec/templates/apply.md`: iteration counter, applied-at timestamp, executor identity, worktree path, branch, commit range, and tasks completed X of Y. This is the v2 DAG artifact that gates `verify`. If `apply.md` already exists, the iteration counter is incremented.
-4. **`finishing-a-development-branch`** — only invoked at the very end; covered in phase 9 below.
+4. **`finishing-a-development-branch`** — only invoked at the very end; covered in Phase 5 / Step 9 below.
 
 **Pre-flight requirement.** Before creating the worktree, the change directory `openspec/changes/<name>/` must already be committed on the current branch. Otherwise, when the worktree merges back, git will refuse with "untracked files would be overwritten by merge."
 

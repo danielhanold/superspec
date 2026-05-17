@@ -78,7 +78,7 @@ Scenarios in `specs/*.md`:
 
 ## Overall Decision
 
-- [ ] ✅ PASS — ready to proceed with finishing-a-development-branch and archive
+- [ ] ✅ PASS — ready to proceed via /opsx:continue to the finalize artifact, then /opsx:archive
 - [ ] ⚠️ PASS WITH WARNINGS — can proceed but note: `<explanation>`
 - [ ] ❌ FAIL — return to the failed artifact, fix, then re-run verify
 
