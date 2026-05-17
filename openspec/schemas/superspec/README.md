@@ -28,21 +28,22 @@ A custom schema leverages OpenSpec's **natively supported project-level schema m
 ## Workflow Overview
 
 ```text
-brainstorm ──→ proposal ──→ specs ──→ tasks ──→ plan ──→ apply ──→ verify
+brainstorm ──→ proposal ──→ specs ──→ tasks ──→ plan ──→ apply ──→ verify ──→ finalize
                   │                     ↑
                   └──→ design ──────────┘
 ```
 
 Differences from `spec-driven`:
 
-| | spec-driven | sdd-plus-superpowers (v2) |
+| | spec-driven | sdd-plus-superpowers (v3) |
 |---|---|---|
 | Starting point | proposal (written manually) | **brainstorm** (invokes brainstorming skill) |
-| Endpoint | tasks (coarse-grained) | **verify** (post-implementation report; apply is the executable midpoint) |
+| Endpoint | tasks (coarse-grained) | **finalize** (git-side closeout receipt; archive follows as a CLI step) |
 | apply requires | tasks | **plan** |
 | apply method | Standard task-by-task | **worktree + subagent-driven-development** |
-| Additional artifacts | — | brainstorm, plan, **apply (receipt)** |
+| Additional artifacts | — | brainstorm, plan, apply (receipt), **finalize (receipt)** |
 | verify requires | tasks | **apply** (v2 — was plan in v1) |
+| finalize requires | — | **verify** (v3) |
 
 ---
 
@@ -123,6 +124,12 @@ The apply phase requires `plan` rather than `tasks` because the executor needs m
 The OpenSpec CLI builds its DAG strictly from the `artifacts:` list, and the `ApplyPhase` zod schema has no `generates` field — so the apply phase alone cannot mark itself complete or be referenced by another artifact's `requires`. In v1 this manifested as `verify.requires: [plan]` plus an inline comment saying "actually verify needs apply, but the schema can't say so." Agents predictably ran verify before apply.
 
 v2 solves this by representing apply twice: a real artifact (`generates: apply.md`, `requires: [plan]`) so `verify.requires: [apply]` is honest, *and* the existing `apply:` top-level block so `/opsx:apply` CLI behavior is unchanged (the handler reads `schema.apply.instruction` and would not see the artifact's instruction). To avoid drift, the canonical body lives in the `apply:` block; the apply artifact's instruction is a short redirect.
+
+### Why finalize Is a DAG Artifact (v3)
+
+In v2 the post-verify git closeout (PR creation / merge / worktree cleanup) lived only in the apply: block's step 5 — a place an agent that just ran `/opsx:verify` typically doesn't re-read. The verify artifact's PASS bullets said "proceed" without naming the next call site, so agents routinely jumped straight to `/opsx:archive`, skipping `superpowers:finishing-a-development-branch` entirely.
+
+v3 promotes `finalize` to a real DAG artifact (`generates: finalize.md`, `requires: [verify]`). `/opsx:continue` surfaces its instruction after verify completes, which invokes `superpowers:finishing-a-development-branch` and records the outcome. The recommended retrospective guidance moves from the apply: block (where it was misplaced — apply ends with verify) into finalize's instruction, where it belongs as a pre-archive activity. `/opsx:archive` is unchanged; it remains an OpenSpec CLI command that runs after finalize and is documented in `docs/workflow-details.md` Phase 6 with the canonical archive-before-merge golden path.
 
 ### Fallback Strategy
 
