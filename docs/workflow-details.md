@@ -1,6 +1,6 @@
 # Superspec Workflow Details
 
-A Superspec change moves through **five phases**, broken into **nine concrete steps**. This page walks through each step — what it is, **why it's required**, what concretely happens, which source system (OpenSpec or Superpowers) owns it, and what step from the other source is replaced.
+A Superspec change moves through **six phases**, broken into **ten concrete steps**. This page walks through each step — what it is, **why it's required**, what concretely happens, which source system (OpenSpec or Superpowers) owns it, and what step from the other source is replaced.
 
 Use it as the long-form companion to the [workflow overview](workflow.md), [top-level README](../README.md), and the schema's own [INTEGRATION.md](../openspec/schemas/superspec/INTEGRATION.md).
 
@@ -16,7 +16,8 @@ Use it as the long-form companion to the [workflow overview](workflow.md), [top-
 | | 6 | `plan` | Make the work executable. | Superpowers: `writing-plans` |
 | **3. Code Implementation** | 7 | `apply` | Change the system. | Superpowers: `using-git-worktrees`, `subagent-driven-development`, `test-driven-development`, `requesting-code-review` |
 | **4. Spec Validation** | 8 | `verify` | Prove it matches intent. | OpenSpec: `/opsx:verify` |
-| **5. Archival** | 9 | finish / archive boundary | Close the lifecycle cleanly. | Hybrid: Superpowers `finishing-a-development-branch` + OpenSpec `/opsx:archive` |
+| **5. Finalization** | 9 | `finalize` | Close out the git side cleanly before archive. | Superpowers: `finishing-a-development-branch` (via `/opsx:continue`) |
+| **6. Archival** | 10 | `archive` boundary | Sync deltas and freeze the change. | OpenSpec: `/opsx:archive` |
 
 Read top-to-bottom for the full lifecycle, or jump to any step.
 
@@ -210,7 +211,7 @@ Because `apply.md` and `verify.md` are both overwritten on each iteration and bo
          ▼
        verify ────► verify.md  (iteration N)
          │
-         ├── PASS or PASS_WITH_WARNINGS ──► finishing-a-development-branch → archive
+         ├── PASS or PASS_WITH_WARNINGS ──► /opsx:continue → finalize → /opsx:archive
          │
          ├── FAIL, items fixable by code change ──► return to apply (N+1)
          │
@@ -221,7 +222,7 @@ Because `apply.md` and `verify.md` are both overwritten on each iteration and bo
 
 Termination rules (recorded in the verify artifact instruction and the apply: phase block step 4 in schema.yaml):
 
-- **PASS** — proceed to `finishing-a-development-branch` and archive.
+- **PASS** — `/opsx:continue` advances to the finalize artifact (Step 9). After finalize.md is written, run `/opsx:archive` (Step 10).
 - **PASS_WITH_WARNINGS** — proceed; warnings are recorded for posterity but do not block.
 - **FAIL with code-fixable items** — return to the apply phase, re-run, overwrite `apply.md` with iteration N+1, then re-run verify.
 - **FAIL with artifact-level items** (e.g. spec drift, a requirement that is no longer satisfied by the plan) — fix the offending artifact first, then re-enter apply with iteration N+1.
@@ -261,28 +262,74 @@ If any check fails, the agent returns to the offending artifact, fixes it, and r
 
 ---
 
-## Phase 5: Archival
+## Phase 5: Finalization
 
-The Archival phase closes the lifecycle: it cleans up the development branch, applies the change's delta specs against the project's living specs, and moves the completed change into the archive. It contains a single step.
+The Finalization phase performs the git-side closeout for the change — merging the branch (if local-only), creating a PR (if going through code review), cleaning up the worktree, and recording the outcome. It contains a single step.
 
-### Step 9. Finalization — finish / archive boundary
+### Step 9. Finalize — `finalize`
 
-> Completes the development branch and prepares OpenSpec finalization.
+> Closes out the development branch in git terms; writes the finalize.md receipt.
 
-**Brief why:** Close the lifecycle cleanly.
+**Brief why:** Close out the git side cleanly before archive.
 
-**Why it's required.** This phase separates *development completion* from *lifecycle closure*. Superpowers cleans up the branch, PR, and worktree (Git hygiene). OpenSpec applies delta specs to the live spec tree and moves the completed change into the archive (history hygiene). Skipping either leaves the repo in a half-finished state — either dangling worktrees and PRs, or specs that no longer reflect what shipped.
+**Why it's required.** In v2 the post-verify git closeout was reachable only via prose in the apply: block — out of the line of sight for an agent that just ran `/opsx:verify`. In v3 finalize is a real DAG artifact: `/opsx:continue` surfaces it as the next ready step after verify, and its instruction names `superpowers:finishing-a-development-branch` as the skill to invoke. The DAG makes the post-verify handoff visible to both agents and humans.
 
-**What the step does.** Two distinct moves, in order:
+**What the step does.** `/opsx:continue` advances to the finalize artifact, whose instruction invokes `superpowers:finishing-a-development-branch`. That skill:
 
-1. **Branch cleanup** — `superpowers:finishing-a-development-branch` walks merge / PR / worktree teardown.
-2. **Archive** — `/opsx:archive` (or `openspec archive`) applies the change's delta specs against `openspec/specs/` (apply order: RENAMED → REMOVED → MODIFIED → ADDED) and moves `changes/<name>/` into the archive.
+- Verifies the project's test baseline passes (precondition).
+- Presents 4 options (or 3 for detached HEAD): merge locally / push & create PR / keep as-is / discard.
+- Executes the chosen option (creates the PR, performs the merge, etc.).
+- Manages worktree cleanup based on the option (removed for merge/discard, preserved for PR/keep).
 
-**Recommended (non-blocking).** Before archiving, write a short retrospective at `retrospective.md` in the change directory. Suggested sections: Wins, Misses, Plan deviations, Skill/workflow compliance, Surprises, and Promote candidates (learnings worth moving into long-term memory or CLAUDE.md).
+Then the agent writes `finalize.md` per `openspec/schemas/superspec/templates/finalize.md` — a minimal receipt: outcome, PR URL if any, final branch state, worktree cleanup status, test-baseline confirmation, timestamp.
 
-**Source phase used.** Hybrid — `superpowers:finishing-a-development-branch` + OpenSpec `/opsx:archive`.
+**Recommended (non-blocking).** Before writing finalize.md, write a short `retrospective.md` in the change directory. Six suggested sections: Wins, Misses, Plan deviations, Skill/workflow compliance, Surprises, Promote candidates. The retrospective recommendation was moved into the finalize artifact in v3 because it belongs as a pre-archive activity, not as part of the apply phase.
 
-**Step not used / replaced and why.** Neither source fully replaces the other. Superpowers handles the development branch's Git/PR/worktree closure; OpenSpec archives the spec-driven change so future audits can replay history. Both are needed to leave the repo in a clean state.
+**Source phase used.** `superpowers:finishing-a-development-branch` (invoked via `/opsx:continue` on the finalize artifact).
+
+**Step not used / replaced and why.** Vanilla OpenSpec has no equivalent step. v2 documented this responsibility only inside the apply: block step 5, which agents that had just run `/opsx:verify` typically did not re-read. v3 promotes it to a DAG artifact so the OPSX-vocabulary entry point (`/opsx:continue`) surfaces it automatically.
+
+---
+
+## Phase 6: Archival
+
+The Archival phase syncs the change's delta specs into the living spec tree and moves the change directory into the archive. It contains a single step.
+
+### Step 10. Archive — `/opsx:archive`
+
+> Syncs delta specs and freezes the change directory.
+
+**Brief why:** Sync deltas and freeze the change.
+
+**Why it's required.** Once the git side is closed out (Phase 5), the OpenSpec change still needs to be merged into the project's *living specs* and archived for history. `/opsx:archive` does both. It is intentionally git-agnostic — it does NOT merge branches or create PRs; that's Phase 5's job.
+
+**What the step does.** Runs `/opsx:archive my-feature` (or `openspec archive`). Behavior:
+
+- Validates the change (`openspec validate`) and checks task completion (unchecked items warn but don't block).
+- Syncs delta specs into `openspec/specs/<capability>/spec.md`. Apply order: RENAMED → REMOVED → MODIFIED → ADDED. If already manually synced, use `--skip-specs`.
+- Moves `openspec/changes/<name>/` into `openspec/changes/archive/YYYY-MM-DD-<name>/`. Both moves are committed on the current branch — typically the feature branch in the canonical golden path below.
+
+#### Canonical PR-review golden path
+
+```text
+1. verify completes (verify.md committed on feature branch)
+2. finalize (creates PR via finishing-a-development-branch; finalize.md says pr-open; worktree preserved)
+3. [PAUSE: human review on the PR; reviewer approves]
+4. /opsx:archive on the feature branch (syncs delta specs, moves change dir; new commits land on the branch)
+5. Push the archive commits to update the PR (git push)
+6. PR merge (gh pr merge --squash --delete-branch or GitHub UI)
+7. Local worktree cleanup if still present (cd to main repo root; git worktree remove .worktrees/<name>; git worktree prune)
+```
+
+The archive-before-merge ordering keeps the PR's diff complete: every commit that went into the change is in the PR, including the archive sync. If the PR is merged before archive runs, the archive commits have to be authored on main after the fact — recoverable, but it loses the unified PR audit trail.
+
+#### Local-merge variant (solo / local-only changes)
+
+If finalize chose Option 1 (Merge locally), the skill performs the merge inline and removes the worktree. `/opsx:archive` then runs on main directly. This inverts the archive/merge order vs. the canonical path. Acceptable for solo or local-only changes where the PR audit trail isn't relevant.
+
+**Source phase used.** OpenSpec `/opsx:archive` (or `openspec archive`).
+
+**Step not used / replaced and why.** Superpowers has no equivalent step. Archive is OpenSpec's mechanism for promoting a change's delta specs into the living specs tree and freezing the change directory; it is fundamental to the spec-driven workflow and is not replaced by anything.
 
 ---
 
