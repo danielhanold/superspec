@@ -1,17 +1,21 @@
 name: SuperSpec
-version: 2
+version: 3
 description: >
   Spec-driven workflow integrated with Superpowers skills.
-  brainstorm → proposal → specs → tasks → plan → apply → verify.
+  brainstorm → proposal → specs → tasks → plan → apply → verify → finalize.
   design is optional (produced from brainstorm but not required by tasks).
   Apply is both a DAG artifact (generates apply.md, a minimal receipt)
   and a top-level apply: phase block (canonical /opsx:apply instruction
   body). Verify requires apply, so /opsx:verify cannot run before
-  /opsx:apply has executed. Apply uses git worktrees +
-  subagent-driven-development (brings TDD and code-review transitively).
-  executing-plans is documented only as a fallback for platforms without
-  subagent support. v2: apply was promoted from a phase-only block to
-  a DAG artifact; verify.requires now points at apply rather than plan.
+  /opsx:apply has executed. Finalize requires verify and is reached via
+  /opsx:continue after verify reports PASS; its instruction invokes
+  superpowers:finishing-a-development-branch and records the outcome.
+  Apply uses git worktrees + subagent-driven-development (brings TDD and
+  code-review transitively). executing-plans is documented only as a
+  fallback for platforms without subagent support. v3: finalize is
+  promoted from a manual post-verify step (documented inside the apply:
+  block) to a real DAG artifact; /opsx:continue is now the OPSX-vocabulary
+  entry point for git-side closeout.
 
 artifacts:
   - id: brainstorm
@@ -228,8 +232,11 @@ artifacts:
          commit range if known.
 
       Recommended convergence loop:
-      - PASS → proceed to finishing-a-development-branch + archive.
-      - PASS_WITH_WARNINGS → proceed; record warnings.
+      - PASS → /opsx:continue advances to the finalize artifact; invoke
+        superpowers:finishing-a-development-branch through it.
+        /opsx:archive runs once finalize.md exists.
+      - PASS_WITH_WARNINGS → same path as PASS; warnings are recorded
+        but do not block.
       - FAIL with code-fixable items → return to apply, re-run, re-verify.
       - FAIL with artifact-level items (e.g. spec drift) → fix the
         offending artifact, then re-enter apply.
@@ -241,6 +248,35 @@ artifacts:
       running the 5 checks manually and recording results in verify.md.
     requires:
       - apply
+
+  - id: finalize
+    generates: finalize.md
+    description: Git-side closeout (PR / merge / worktree cleanup) before archive
+    template: finalize.md
+    instruction: |
+      Use the Skill tool to invoke superpowers:finishing-a-development-branch.
+
+      That skill presents 4 options (or 3 for detached HEAD): merge
+      locally, push and create a PR, keep as-is, or discard. Pick the
+      appropriate one and let the skill execute it (it verifies tests,
+      manages worktree cleanup, and creates the PR or merge as chosen).
+
+      Then write finalize.md per templates/finalize.md: outcome chosen,
+      PR URL if applicable, final branch state, worktree cleanup status,
+      test-baseline confirmation, timestamp.
+
+      Recommended (non-blocking): before writing finalize.md, write a
+      short retrospective.md in the change directory. Six suggested
+      sections: Wins, Misses, Plan deviations, Skill/workflow compliance,
+      Surprises, Promote candidates. Evidence first, opinion second.
+      Skippable for trivial single-commit fixes.
+
+      Once finalize.md exists, the change is git-clean and ready for
+      /opsx:archive. See docs/workflow-details.md Phase 6 (Archival)
+      for the canonical PR-review golden path, including the
+      archive-before-merge ordering.
+    requires:
+      - verify
 
 apply:
   requires: [plan]
@@ -358,38 +394,6 @@ apply:
          re-enter step 2 with iteration N+1.
        - Iteration > 5 → stop the loop and report to the user instead
          of continuing automatically.
-
-    5. **Completion**: Once verify.md shows no blocking issues,
-       use the Skill tool to invoke
-       **superpowers:finishing-a-development-branch** for branch
-       cleanup, PR creation, etc.
-
-    **Recommended — Retrospective before archive (non-blocking)**:
-
-    Before archiving the change, it is strongly recommended (but not
-    required) to write a short retrospective at `retrospective.md` in
-    the change directory. A good retrospective raises the quality of
-    every subsequent change because it captures what the diff alone
-    cannot: why decisions were made, what surprised you, and which
-    learnings deserve to be promoted to long-term memory.
-
-    Evidence first, opinion second — every claim should cite a
-    commit, file, or measurable fact. Suggested sections:
-
-    - **Wins** — what worked well (with commit / test evidence)
-    - **Misses** — what didn't work (🔴 blocking / 🟡 painful / 📌 nit)
-    - **Plan deviations** — tasks whose scope changed, and why
-    - **Skill / workflow compliance** — skills invoked vs. deliberately
-      skipped (and the reason)
-    - **Surprises** — assumptions that turned out wrong
-    - **Promote candidates** — learnings to move into long-term memory,
-      CLAUDE.md, or schema/skill updates (classify each candidate so
-      insights don't die silently in the archive)
-
-    If a `workflow-retrospective` skill is available in the environment,
-    it can automate evidence collection; otherwise write the six
-    sections manually. Skipping is acceptable for trivial changes
-    (single-commit fixes) where the overhead exceeds the value.
 
     If any skill is unavailable, fall back to manual implementation
     using the standard task-by-task loop from tasks.md.
