@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  MIT licensed · Schema version 2 · Requires OpenSpec + Superpowers
+  MIT licensed · Schema version 3 · Requires OpenSpec + Superpowers
 </p>
 
 ---
@@ -173,6 +173,7 @@ Stop at each artifact, review it, give feedback, and only continue when you're s
 /opsx:continue         # → plan
 /opsx:apply            # Worktree + Superpowers TDD loop — produces the actual code and writes apply.md (the v2 receipt)
 /opsx:verify           # Validate implementation matches the delta specs and tasks (requires apply.md to exist)
+/opsx:continue         # → finalize (invokes superpowers:finishing-a-development-branch, writes finalize.md; v3)
 /opsx:archive          # Sync the change's delta specs into project specs, then archive
 ```
 
@@ -184,6 +185,7 @@ For small, well-understood changes where you trust the agent to produce every ar
 /opsx:ff my-feature    # End-to-end: brainstorm + proposal + design + specs + tasks + plan
 /opsx:apply            # Worktree + Superpowers TDD loop — produces the actual code and writes apply.md (the v2 receipt)
 /opsx:verify           # Validate implementation matches the delta specs and tasks (requires apply.md to exist)
+/opsx:continue         # → finalize (invokes superpowers:finishing-a-development-branch, writes finalize.md; v3)
 /opsx:archive          # Sync the change's delta specs into project specs, then archive
 ```
 
