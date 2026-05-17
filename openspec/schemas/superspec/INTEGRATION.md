@@ -67,7 +67,6 @@ There is also one **fallback**:
        │    │ (DAG +   │ ◄── superpowers:subagent-driven-development
        │    │  apply:  │         ├── superpowers:test-driven-development (transitive)
        │    │  phase)  │         └── superpowers:requesting-code-review (transitive)
-       │    │          │ ◄── superpowers:finishing-a-development-branch
        │    │ writes   │
        │    │ apply.md │
        │    └────┬─────┘
@@ -269,7 +268,7 @@ Behavior:
 
 ```text
 1. verify completes (verify.md committed on feature branch)
-2. finalize (creates PR via finishing-a-development-branch; finalize.md says pr-open; worktree preserved)
+2. finalize (creates PR via finishing-a-development-branch; finalize.md records Outcome: pr-created, Final state: pr-open; worktree preserved)
 3. [PAUSE: human review on the PR; reviewer approves]
 4. /opsx:archive on the feature branch (syncs delta specs, moves change dir; new commits land on the branch)
 5. Push the archive commits to update the PR
