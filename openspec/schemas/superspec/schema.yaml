@@ -385,7 +385,10 @@ apply:
        blocks `verify` until apply.md exists.
 
        Convergence loop — react to the verify outcome:
-       - PASS or PASS_WITH_WARNINGS → proceed to step 5 (Completion).
+       - PASS or PASS_WITH_WARNINGS → proceed via /opsx:continue to the
+         finalize artifact (writes finalize.md after invoking
+         superpowers:finishing-a-development-branch). /opsx:archive
+         runs once finalize.md exists.
        - FAIL with code-fixable items → return to step 2 (Executor),
          re-run with the same iteration mechanics (apply.md is
          overwritten, iteration counter increments), then re-run verify.
