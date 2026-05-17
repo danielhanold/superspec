@@ -28,17 +28,18 @@ OpenSpec supports custom schemas, and Superspec is exactly that — a drop-in sc
 
 ## Concepts
 
-> **Looking for the workflow map?** See **[docs/workflow.md](docs/workflow.md)** for the visual overview, or **[docs/workflow-details.md](docs/workflow-details.md)** for the full nine-step breakdown.
+> **Looking for the workflow map?** See **[docs/workflow.md](docs/workflow.md)** for the visual overview, or **[docs/workflow-details.md](docs/workflow-details.md)** for the full ten-step breakdown.
 
-### The five phases of a Superspec change
+### The six phases of a Superspec change
 
-Every change moves through the same five phases, in order:
+Every change moves through the same six phases, in order:
 
 1. **Brainstorm** — nail down the idea for the change through a guided conversation.
 2. **Artifact creation** — produce the proposal, optional design, [delta specs](https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md#delta-specs), tasks, and the micro-task plan.
 3. **Code implementation** — write the code in an isolated worktree using subagent-driven TDD.
 4. **Spec validation** — verify the implementation matches the delta specs and tasks.
-5. **Archival** — merge the change's delta specs into the project's living specs.
+5. **Finalization** — close out the git side (create PR / merge / clean up the worktree) and record the outcome in `finalize.md`.
+6. **Archival** — merge the change's delta specs into the project's living specs and archive the change directory.
 
 Each phase produces concrete artifacts in the change directory and (where applicable) hands off to a Superpowers skill.
 
@@ -201,8 +202,8 @@ To skip Superspec for a single change and use the upstream schema instead:
 
 ## Further reading
 
-- [`docs/workflow.md`](docs/workflow.md) — visual overview and quick mental model for the five-phase workflow
-- [`docs/workflow-details.md`](docs/workflow-details.md) — full nine-step walkthrough with per-step rationale, owner, and fallback notes
+- [`docs/workflow.md`](docs/workflow.md) — visual overview and quick mental model for the six-phase workflow
+- [`docs/workflow-details.md`](docs/workflow-details.md) — full ten-step walkthrough with per-step rationale, owner, and fallback notes
 - [`docs/project-layout.md`](docs/project-layout.md) — files and directories Superspec adds under `openspec/` after install
 - [`openspec/schemas/superspec/README.md`](openspec/schemas/superspec/README.md) — design motivation and rationale
 - [`openspec/schemas/superspec/INTEGRATION.md`](openspec/schemas/superspec/INTEGRATION.md) — full lifecycle, CLI cheat sheet, and design choices

@@ -313,7 +313,7 @@ The Archival phase syncs the change's delta specs into the living spec tree and 
 
 ```text
 1. verify completes (verify.md committed on feature branch)
-2. finalize (creates PR via finishing-a-development-branch; finalize.md says pr-open; worktree preserved)
+2. finalize (creates PR via finishing-a-development-branch; finalize.md records Outcome: pr-created, Final state: pr-open; worktree preserved)
 3. [PAUSE: human review on the PR; reviewer approves]
 4. /opsx:archive on the feature branch (syncs delta specs, moves change dir; new commits land on the branch)
 5. Push the archive commits to update the PR (git push)
@@ -360,6 +360,7 @@ If a Superpowers skill is unavailable (not installed, version mismatch), each ar
 | 1 — `brainstorm` | `superpowers:brainstorming` | Write `brainstorm.md` directly. |
 | 6 — `plan` | `superpowers:writing-plans` | Write `plan.md` directly. |
 | 7 — `apply` (subagents unavailable) | `superpowers:subagent-driven-development` | Use `superpowers:executing-plans`, or run tasks manually. Either path requires you to maintain TDD discipline and invoke `superpowers:requesting-code-review` yourself — neither is activated transitively when the subagent path is bypassed. |
+| 9 — `finalize` | `superpowers:finishing-a-development-branch` | Run the git operations manually (merge / push & open PR / clean up worktree), then author `finalize.md` directly from `openspec/schemas/superspec/templates/finalize.md`. |
 
 ---
 

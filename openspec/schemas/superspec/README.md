@@ -55,7 +55,7 @@ Differences from `spec-driven`:
 | plan artifact | `superpowers:writing-plans` | artifact instruction |
 | apply phase | `superpowers:using-git-worktrees` | apply instruction |
 | apply phase | `superpowers:subagent-driven-development` | apply instruction |
-| post-apply | `superpowers:finishing-a-development-branch` | apply instruction |
+| finalize artifact | `superpowers:finishing-a-development-branch` | artifact instruction |
 
 All integrations are achieved through the `instruction` field in schema.yaml — directing the AI to invoke the corresponding skill at the appropriate time via the Skill tool. No Superpowers skill files are modified.
 
@@ -75,8 +75,10 @@ This is achieved through context injection (appending directives when invoking t
 ### Quick Flow (Recommended)
 ```bash
 /opsx:ff my-feature    # End-to-end: create directory + brainstorm + proposal + design + specs + tasks + plan
-/opsx:apply            # worktree + subagent-driven-development
-/opsx:archive          # archive
+/opsx:apply            # worktree + subagent-driven-development (writes apply.md)
+/opsx:verify           # 5 OpenSpec checks (writes verify.md; requires apply.md)
+/opsx:continue         # → finalize (invokes superpowers:finishing-a-development-branch, writes finalize.md; v3)
+/opsx:archive          # sync delta specs + archive change dir
 ```
 
 ### Step-by-Step Flow
@@ -88,8 +90,10 @@ This is achieved through context injection (appending directives when invoking t
 /opsx:continue         # → specs
 /opsx:continue         # → tasks
 /opsx:continue         # → plan
-/opsx:apply
-/opsx:archive
+/opsx:apply            # writes apply.md
+/opsx:verify           # writes verify.md (requires apply.md)
+/opsx:continue         # → finalize (invokes superpowers:finishing-a-development-branch, writes finalize.md; v3)
+/opsx:archive          # sync delta specs + archive change dir
 ```
 
 ### Switching Back to spec-driven
