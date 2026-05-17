@@ -2,7 +2,7 @@
 
 > This document explains how the `sdd-plus-superpowers` schema integrates OpenSpec's artifact governance workflow with Superpowers' execution skills into a single workflow. It serves as a reference table for new member onboarding, change reviews, and as required reading before modifying the schema.
 >
-> Corresponding schema version: `sdd-plus-superpowers` v2
+> Corresponding schema version: `sdd-plus-superpowers` v3
 
 ---
 
@@ -25,7 +25,7 @@ The two are integrated through a custom schema [schema.yaml](./schema.yaml). The
 | 4 | `superpowers:subagent-driven-development` | apply step 2a | Direct |
 | 5 | `superpowers:test-driven-development` | (auto-triggered inside #4) | **Transitive** (SKILL.md L205 / L274) |
 | 6 | `superpowers:requesting-code-review` | (auto-triggered inside #4) | **Transitive** (SKILL.md L270) |
-| 7 | `superpowers:finishing-a-development-branch` | apply step 5 | Direct |
+| 7 | `superpowers:finishing-a-development-branch` | `finalize` artifact instruction | Direct |
 
 There is also one **fallback**:
 
@@ -75,16 +75,25 @@ There is also one **fallback**:
        ▼         ▼
     ┌──────────┐ ┌──────────┐
     │  design  │ │  verify  │ ◄── openspec-verify-change (5 checks)
-    │(optional)│ └──────────┘
-    └──────────┘
+    │(optional)│ └────┬─────┘
+    └──────────┘      │
+                      ▼
+                  ┌──────────┐
+                  │ finalize │ ◄── superpowers:finishing-a-development-branch
+                  │          │     writes finalize.md
+                  └──────────┘
+                      │
+                      ▼
+                  /opsx:archive  (not in DAG; OpenSpec CLI)
 ```
 
 **Key points**:
 
 - `design` is an **optional leaf**. Brainstorm still attempts to pre-populate design.md, but tasks no longer hard-depend on it (`tasks.requires: [specs]`). Per OpenSpec conventions: `design.md` is only written when non-trivial technical decisions need explanation.
-- `apply` is now a **real DAG node** as of schema v2. It generates `apply.md` (a minimal receipt — iteration counter, worktree, branch, commit range, task counts) so the DAG can honestly express "verify depends on apply having run." The canonical `/opsx:apply` instruction body still lives in the top-level `apply:` phase block; the apply artifact's own instruction is a short redirect to avoid drift.
-- `verify` now requires `apply` (was `plan` in v1). The OpenSpec CLI will refuse to surface verify as a `ready` artifact until `apply.md` exists.
-- The convergence loop (apply → verify → loop back on code-fixable FAILs, capped at 5 iterations) is documented in `docs/workflow-details.md`. The schema enforces the file-existence dependency; the iteration decision is made by the agent or by a future loop-runner command (not in v2 scope).
+- `apply` is a **real DAG node** as of schema v2. It generates `apply.md` (a minimal receipt — iteration counter, worktree, branch, commit range, task counts) so the DAG can honestly express "verify depends on apply having run." The canonical `/opsx:apply` instruction body still lives in the top-level `apply:` phase block; the apply artifact's own instruction is a short redirect to avoid drift.
+- `verify` requires `apply` (was `plan` in v1). The OpenSpec CLI will refuse to surface verify as a `ready` artifact until `apply.md` exists.
+- `finalize` is a **real DAG node** as of schema v3. It generates `finalize.md` (a minimal git-closeout receipt: outcome, PR URL, final branch state) and requires `verify`. `/opsx:continue` surfaces finalize's instruction after verify completes; that instruction invokes `superpowers:finishing-a-development-branch`. `/opsx:archive` is the lifecycle close that follows finalize and is not in the DAG (it remains an OpenSpec CLI command).
+- The convergence loop (apply → verify → loop back on code-fixable FAILs, capped at 5 iterations) is documented in `docs/workflow-details.md`. The schema enforces the file-existence dependency; the iteration decision is made by the agent or by a future loop-runner command (not in scope for v2 or v3).
 
 ---
 
@@ -207,13 +216,20 @@ Before invoking verify, the executor writes a minimal `apply.md` receipt per `op
 
 If any check fails, go back to the corresponding artifact, fix it, and re-run verify.
 
-#### 3-5. Completion — Invoke `superpowers:finishing-a-development-branch`
+---
+
+### Step 4: Finalization
+
+`/opsx:continue` after verify completes surfaces the `finalize` artifact's instruction.
+
+#### 4-1. Finalize — Invoke `superpowers:finishing-a-development-branch`
 
 - Confirm all tests are green
 - Present options: merge / PR / keep branch / discard
-- Clean up the worktree
+- Clean up the worktree (preserved if Option 2 PR or Option 3 keep-as-is)
+- Write `finalize.md` per `openspec/schemas/superspec/templates/finalize.md`: outcome chosen, PR URL if applicable, final branch state, worktree cleanup status, test-baseline confirmation, timestamp.
 
-#### 3-6. Retrospective (Recommended, Non-blocking)
+#### 4-2. Retrospective (Recommended, Non-blocking)
 
 **Not a mandatory step, but strongly recommended**: Before archiving, produce a `retrospective.md` in the change directory. The retrospective is a "self-review" of the entire change — it captures things the diff cannot show: why a decision was made, what surprised you, and which lessons learned are worth promoting to long-term memory.
 
@@ -232,11 +248,13 @@ If `workflow-retrospective` skill is available in the environment, it automates 
 
 ---
 
-### Step 4: Archive
+### Step 5: Archive
 
 ```bash
 /opsx:archive my-feature
 ```
+
+Behavior:
 
 - Validates + checks task completion (incomplete tasks warn but don't block)
 - Syncs delta specs back to `openspec/specs/<capability>/spec.md`
@@ -244,6 +262,26 @@ If `workflow-retrospective` skill is available in the environment, it automates 
   - If already manually synced, use `--skip-specs`
 - Moves `changes/my-feature/` to `changes/archive/YYYY-MM-DD-my-feature/`
 - History is frozen; the unix timeline is treated as the source of truth
+
+`/opsx:archive` does NOT merge git branches and does NOT create PRs. The git-side closeout is the `finalize` artifact's responsibility (Step 4-1 above).
+
+#### Canonical PR-review golden path
+
+```text
+1. verify completes (verify.md committed on feature branch)
+2. finalize (creates PR via finishing-a-development-branch; finalize.md says pr-open; worktree preserved)
+3. [PAUSE: human review on the PR; reviewer approves]
+4. /opsx:archive on the feature branch (syncs delta specs, moves change dir; new commits land on the branch)
+5. Push the archive commits to update the PR
+6. PR merge (gh pr merge --squash --delete-branch or GitHub UI)
+7. Local worktree cleanup if still present (git worktree remove + git worktree prune)
+```
+
+The archive-before-merge ordering keeps the PR's diff complete: every commit that went into the change is in the PR, including the archive sync. If the PR is merged before archive runs, the archive commits would have to be authored on main after the fact — recoverable, but loses the unified PR audit trail.
+
+#### Local-merge variant (acceptable for solo / local-only changes)
+
+If finalize chose Option 1 (Merge locally), the skill performs the merge inline and removes the worktree. `/opsx:archive` then runs on main directly. This inverts the archive/merge order vs. the canonical path. Acceptable for solo or local-only changes where the PR audit trail isn't relevant.
 
 ---
 
@@ -266,7 +304,7 @@ If `workflow-retrospective` skill is available in the environment, it automates 
 
 ---
 
-## 6. Elegant Design Choices in the Integration (5 Worth Remembering)
+## 6. Elegant Design Choices in the Integration (6 Worth Remembering)
 
 ### 1. Output redirection
 
@@ -292,11 +330,28 @@ In v2, `apply` is promoted to a real artifact (generating `apply.md`, a minimal 
 
 This change also unlocks the documented apply → verify → repeat convergence loop, since `verify.md` outcomes can now feed cleanly back into a re-run of apply with an incremented iteration counter. See `docs/workflow-details.md` for the loop pattern.
 
+### 6. Finalize is a real artifact, not a hidden phase (v3)
+
+In v2, post-verify git closeout (PR creation, worktree cleanup) was reachable only via the apply: block's step 5 prose, which an agent that just ran `/opsx:verify` typically doesn't re-read. The verify artifact's instruction said "proceed" on PASS without naming the next call site, and verify.md's convergence-loop reminder only covered FAIL paths. As a result, agents (and humans) routinely jumped straight to `/opsx:archive`, skipping `superpowers:finishing-a-development-branch` and leaving the branch and PR unfinished.
+
+In v3, `finalize` is promoted to a real DAG artifact (`generates: finalize.md`, `requires: [verify]`). `/opsx:continue` surfaces its instruction after verify completes; that instruction invokes `superpowers:finishing-a-development-branch` and records the outcome. No new slash command is needed — the existing OpenSpec workflow vocabulary already gives the call site.
+
+This change also moves the recommended retrospective guidance from the apply: block (where it was misplaced — apply ends with verify, not with archive) into finalize's instruction, where it logically belongs as a pre-archive activity.
+
 ### Migration from schema v1
 
 If a project pinned to schema v1 has in-flight changes whose `verify.md` was authored before v2 landed but no `apply.md` exists in the change directory, `/opsx:verify` will report the change as blocked under v2 (missing required artifact `apply`).
 
 Migration: author a minimal `apply.md` by hand from `openspec/schemas/superspec/templates/apply.md` — set `Iteration: 1`, fill the worktree path, branch, commit range, and task counts from the existing implementation, then re-run `/opsx:verify`. This is a one-time migration cost per in-flight change; no archived changes are affected.
+
+### Migration from schema v2
+
+If a project pinned to schema v2 has in-flight changes that already have `verify.md` but no `finalize.md`, `/opsx:continue` under v3 will report finalize as the next ready artifact and refuse to advance further. Migration:
+
+1. Author a minimal `finalize.md` by hand from `openspec/schemas/superspec/templates/finalize.md`. Fill the fields from the actual branch state — pick the outcome that matches what was already done (e.g., `pr-created` if a PR exists), copy branch state from `git status` / `gh pr view`, and record current worktree state.
+2. Re-run `/opsx:continue`; it should now advance past finalize, and the change is ready for `/opsx:archive`.
+
+This is a one-time migration cost per in-flight v2 change; no archived changes are affected.
 
 ---
 
