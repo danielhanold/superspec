@@ -1,6 +1,6 @@
 # Superspec Phases — Visual Flowchart
 
-High-level pipeline view of the five phases a Superspec change moves through, with explicit ownership marked at each step. Companion to [`docs/workflow-details.md`](workflow-details.md), which expands the same phases into nine concrete steps.
+High-level pipeline view of the six phases a Superspec change moves through, with explicit ownership marked at each step. Companion to [`docs/workflow-details.md`](workflow-details.md), which expands the same phases into ten concrete steps.
 
 ---
 
@@ -75,15 +75,24 @@ flowchart TD
     P4 --> P5
 
     %% ---------- Phase 5 ----------
-    subgraph P5[" ⚡📋 &nbsp;Phase 5 · Archival &nbsp;<code>/opsx:archive</code> "]
+    subgraph P5[" ⚡ &nbsp;Phase 5 · Finalization &nbsp;<code>/opsx:continue</code> → <code>finalize</code> "]
         direction TB
         P5a["⚡ <b>finishing-a-development-branch</b><br/>Merge · PR · worktree teardown"]
-        P5b["📋 <b><code>openspec archive</code></b> <i>(invoked by <code>/opsx:archive</code>)</i><br/>Apply deltas to <code>openspec/specs/</code><br/>order: RENAMED → REMOVED → MODIFIED → ADDED<br/>Move change → archive/"]
+        P5b[/"📄 finalize.md"/]
         P5a --> P5b
     end
-    class P5 hybrid
+    class P5 sp
 
-    P5 --> Done(["✅ Shipped &amp; archived · specs in sync"]):::terminal
+    P5 --> P6
+
+    %% ---------- Phase 6 ----------
+    subgraph P6[" 📋 &nbsp;Phase 6 · Archival &nbsp;<code>/opsx:archive</code> "]
+        direction TB
+        P6a["📋 <b><code>openspec archive</code></b> <i>(invoked by <code>/opsx:archive</code>)</i><br/>Apply deltas to <code>openspec/specs/</code><br/>order: RENAMED → REMOVED → MODIFIED → ADDED<br/>Move change → archive/"]
+    end
+    class P6 os
+
+    P6 --> Done(["✅ Shipped &amp; archived · specs in sync"]):::terminal
 ```
 
 ---
@@ -96,13 +105,14 @@ flowchart TD
 | 2 | Artifact Creation    | ⚡📋   | `/opsx:continue` · `superpowers:writing-plans`                                                                                       | `proposal.md` · `design.md` · `specs/*/spec.md` · `tasks.md` · `plan.md` |
 | 3 | Code Implementation  | ⚡      | `using-git-worktrees` · `subagent-driven-development` · `test-driven-development` · `requesting-code-review`                         | Code, tests, commits in `.worktrees/<name>/`           |
 | 4 | Spec Validation      | 📋      | `/opsx:verify`                                                                                                                       | `verify.md`                                            |
-| 5 | Archival             | ⚡📋   | `superpowers:finishing-a-development-branch` · `/opsx:archive`                                                                       | Updated `openspec/specs/` · archived change directory   |
+| 5 | Finalization         | ⚡      | `/opsx:continue` → `finalize` · `superpowers:finishing-a-development-branch`                                                         | `finalize.md` (git closeout receipt) · optional `retrospective.md` |
+| 6 | Archival             | 📋      | `/opsx:archive` · `openspec archive`                                                                                                 | Updated `openspec/specs/` · archived change directory   |
 
 ---
 
 ## See also
 
 - [`docs/workflow.md`](workflow.md) — visual overview and quick mental model
-- [`docs/workflow-details.md`](workflow-details.md) — phase-by-phase walkthrough with the nine concrete steps and per-step rationale
+- [`docs/workflow-details.md`](workflow-details.md) — phase-by-phase walkthrough with the ten concrete steps and per-step rationale
 - [`openspec/schemas/superspec/INTEGRATION.md`](../openspec/schemas/superspec/INTEGRATION.md) — full lifecycle and CLI cheat sheet
 - [`openspec/schemas/superspec/schema.yaml`](../openspec/schemas/superspec/schema.yaml) — machine-readable definition that drives the pipeline
