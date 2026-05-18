@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1720"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1840"
      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
 
   <defs>
@@ -63,12 +63,12 @@
   </defs>
 
   <!-- ================== background ================== -->
-  <rect width="900" height="1720" fill="#fafafa"/>
-  <rect width="900" height="1720" fill="url(#dots)" opacity="0.6"/>
+  <rect width="900" height="1840" fill="#fafafa"/>
+  <rect width="900" height="1840" fill="url(#dots)" opacity="0.6"/>
 
   <!-- ================== title ================== -->
   <text x="450" y="50" text-anchor="middle" font-size="26" font-weight="700" fill="#0f172a">
-    Superspec — 5-Phase Pipeline
+    Superspec — 6-Phase Pipeline
   </text>
   <text x="450" y="74" text-anchor="middle" font-size="13" fill="#64748b">
     OpenSpec governance · Superpowers execution · single traceable change from idea to TDD-verified code
@@ -217,7 +217,7 @@
       <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
       <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
       <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">subagent-driven-development</text>
-      <text x="36" y="30" font-size="12" fill="#475569">Main agent dispatches a fresh subagent per micro-task in <tspan class="mono">plan.md</tspan></text>
+      <text x="36" y="30" font-size="12" fill="#475569">Main agent dispatches a fresh subagent per micro-task in <tspan class="mono">plan.md</tspan> · writes <tspan class="mono">apply.md</tspan> receipt</text>
     </g>
 
     <!-- substep 3 (transitive) -->
@@ -255,7 +255,7 @@
 
     <!-- 5 checks list -->
     <g transform="translate(20, 60)">
-      <text x="0" y="12" font-size="12" font-weight="600" fill="#1e3a8a">5 verification checks → recorded in <tspan class="mono">verify.md</tspan></text>
+      <text x="0" y="12" font-size="12" font-weight="600" fill="#1e3a8a">5 verification checks → recorded in <tspan class="mono">verify.md</tspan> (requires <tspan class="mono">apply.md</tspan>)</text>
 
       <g font-size="12" fill="#0f172a">
         <text x="6" y="38" fill="#3b82f6" font-weight="700">①</text>
@@ -280,44 +280,62 @@
   <line x1="450" y1="1284" x2="450" y2="1320" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
 
   <!-- ========================================================= -->
-  <!-- ========== PHASE 5 · ARCHIVAL =========================== -->
+  <!-- ========== PHASE 5 · FINALIZATION ======================= -->
   <!-- ========================================================= -->
   <g transform="translate(80, 1328)">
-    <rect x="0" y="0" width="740" height="190" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
-    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#ede9fe"/>
-    <circle cx="26" cy="22" r="14" fill="#8b5cf6"/>
+    <rect x="0" y="0" width="740" height="124" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#fef3c7"/>
+    <circle cx="26" cy="22" r="14" fill="#f59e0b"/>
     <text x="26" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">5</text>
-    <text x="50" y="27" font-size="14" font-weight="700" fill="#5b21b6" letter-spacing="1.2">PHASE 5 · ARCHIVAL</text>
+    <text x="50" y="27" font-size="14" font-weight="700" fill="#92400e" letter-spacing="1.2">PHASE 5 · FINALIZATION</text>
     <!-- entrypoint chip -->
-    <rect x="518" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#8b5cf6" stroke-width="1"/>
-    <text x="591" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#5b21b6">/opsx:archive</text>
-    <g color="#5b21b6"><use href="#ic-hybrid" x="692" y="14" width="32" height="16"/></g>
-    <line x1="0" y1="44" x2="740" y2="44" stroke="#ddd6fe" stroke-width="1"/>
+    <rect x="518" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#f59e0b" stroke-width="1"/>
+    <text x="591" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#92400e">/opsx:continue</text>
+    <g color="#92400e"><use href="#ic-bolt" x="708" y="14" width="16" height="16"/></g>
+    <line x1="0" y1="44" x2="740" y2="44" stroke="#fde68a" stroke-width="1"/>
 
-    <!-- substep 1 -->
-    <g transform="translate(20, 60)">
+    <!-- substep: finishing-a-development-branch -->
+    <g transform="translate(20, 64)">
       <circle cx="14" cy="14" r="13" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
       <g color="#92400e"><use href="#ic-bolt" x="7" y="7" width="14" height="14"/></g>
       <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">superpowers:finishing-a-development-branch</text>
-      <text x="36" y="30" font-size="12" fill="#475569">Git hygiene — merge · PR · worktree teardown</text>
-    </g>
-
-    <!-- substep 2 -->
-    <g transform="translate(20, 116)">
-      <circle cx="14" cy="14" r="13" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
-      <g color="#1e3a8a"><use href="#ic-clipboard" x="7" y="7" width="14" height="14"/></g>
-      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">openspec archive
-        <tspan font-weight="400" fill="#64748b" class="mono">  (invoked by /opsx:archive)</tspan>
-      </text>
-      <text x="36" y="30" font-size="12" fill="#475569">Apply deltas to <tspan class="mono">openspec/specs/</tspan> · order: RENAMED → REMOVED → MODIFIED → ADDED</text>
-      <text x="36" y="46" font-size="12" fill="#475569">Move <tspan class="mono">changes/&lt;name&gt;/</tspan> → archive · history hygiene</text>
+      <text x="36" y="30" font-size="12" fill="#475569">4 options · merge locally · push &amp; create PR · keep as-is · discard · worktree cleanup per outcome</text>
+      <text x="36" y="46" font-size="11" fill="#64748b">→ outputs <tspan class="mono" fill="#0f172a">finalize.md</tspan> · Outcome · Final state · PR URL · Cleanup</text>
     </g>
   </g>
 
-  <line x1="450" y1="1518" x2="450" y2="1554" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="450" y1="1452" x2="450" y2="1488" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========================================================= -->
+  <!-- ========== PHASE 6 · ARCHIVAL =========================== -->
+  <!-- ========================================================= -->
+  <g transform="translate(80, 1496)">
+    <rect x="0" y="0" width="740" height="140" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <path d="M 0 8 L 0 44 L 740 44 L 740 8 Q 740 0 732 0 L 8 0 Q 0 0 0 8 Z" fill="#dbeafe"/>
+    <circle cx="26" cy="22" r="14" fill="#3b82f6"/>
+    <text x="26" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">6</text>
+    <text x="50" y="27" font-size="14" font-weight="700" fill="#1e3a8a" letter-spacing="1.2">PHASE 6 · ARCHIVAL</text>
+    <!-- entrypoint chip -->
+    <rect x="518" y="11" width="146" height="22" rx="4" fill="#ffffff" stroke="#3b82f6" stroke-width="1"/>
+    <text x="591" y="26" text-anchor="middle" class="mono" font-size="11" font-weight="600" fill="#1e3a8a">/opsx:archive</text>
+    <g color="#1e3a8a"><use href="#ic-clipboard" x="708" y="14" width="16" height="16"/></g>
+    <line x1="0" y1="44" x2="740" y2="44" stroke="#bfdbfe" stroke-width="1"/>
+
+    <!-- substep: openspec archive -->
+    <g transform="translate(20, 60)">
+      <circle cx="14" cy="14" r="13" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <g color="#1e3a8a"><use href="#ic-clipboard" x="7" y="7" width="14" height="14"/></g>
+      <text x="36" y="13" class="mono" font-size="13" font-weight="600" fill="#0f172a">openspec archive<tspan font-weight="400" fill="#64748b" class="mono">  (invoked by /opsx:archive)</tspan></text>
+      <text x="36" y="30" font-size="12" fill="#475569">Apply deltas to <tspan class="mono">openspec/specs/</tspan> · order: RENAMED → REMOVED → MODIFIED → ADDED</text>
+      <text x="36" y="46" font-size="12" fill="#475569">Move <tspan class="mono">changes/&lt;name&gt;/</tspan> → archive · history hygiene</text>
+      <text x="36" y="64" font-size="11" fill="#64748b">git-agnostic · does not merge branches · canonical golden path: archive runs <tspan font-style="italic">before</tspan> PR merge</text>
+    </g>
+  </g>
+
+  <line x1="450" y1="1636" x2="450" y2="1672" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
 
   <!-- ================== END NODE ================== -->
-  <g transform="translate(280, 1562)">
+  <g transform="translate(280, 1680)">
     <rect x="0" y="0" width="340" height="44" rx="22" fill="#dcfce7" stroke="#16a34a" stroke-width="2" filter="url(#cardShadow)"/>
     <g color="#16a34a"><use href="#ic-check" x="20" y="14" width="16" height="16"/></g>
     <text x="180" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#14532d">
@@ -326,8 +344,8 @@
   </g>
 
   <!-- ================== footer ================== -->
-  <text x="450" y="1660" text-anchor="middle" font-size="11" fill="#94a3b8">
-    Superspec · OpenSpec orchestrates · Superpowers executes · See docs/workflow-details.md for the 9-step expansion
+  <text x="450" y="1778" text-anchor="middle" font-size="11" fill="#94a3b8">
+    Superspec · OpenSpec orchestrates · Superpowers executes · See docs/workflow-details.md for the 10-step expansion
   </text>
 
 </svg>
